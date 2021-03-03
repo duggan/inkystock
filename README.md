@@ -87,15 +87,19 @@ To display regular stocks, you'll need an [IEX Cloud](https://iexcloud.io/) API 
 
 You'll need to have SSH access to the Pi, and it will need access to the Internet. There are a variety of tutorials on doing that, [here's one](https://desertbot.io/blog/headless-pi-zero-w-wifi-setup-windows).
 
-Assuming you're using the default `pi` user on Raspbian (Buster), SSH to the pi and run:
+Also, it's best to start with a freshly flashed OS; should help avoid any mysterious conflicts.
 
+Assuming you're using the default `pi` user on Raspbian (Buster), SSH to the pi:
+
+Enable SPI and I2C:
 ```
 sudo raspi-config nonint do_spi 0
 sudo raspi-config nonint do_i2c 0
 ```
 
+Install dependencies and app:
 ```bash
-sudo apt-get install -y libtiff-dev libopenjp2-7-dev libatlas-base-dev libpython3-pip python3-dev
+sudo apt-get install -y libtiff-dev libopenjp2-7-dev libatlas-base-dev python3-pip python3-dev
 wget -O inkystock.zip https://github.com/duggan/inkystock/archive/main.zip
 unzip inkystock.zip
 cd inkystock-main
@@ -114,7 +118,7 @@ then it may be worth [trying the inky "one line installer" from the Pimoroni tut
 
 When you're happy it's working, you can install a cron job to update the screen every 5 minutes:
 ```bash
-sudo make cron
+sudo make cron.5m
 ```
 
 ## Credits
