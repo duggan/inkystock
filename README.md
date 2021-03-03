@@ -72,7 +72,7 @@ To display regular stocks, you'll need an [IEX Cloud](https://iexcloud.io/) API 
 
 ### Install
 
-You'll need to have SSH access to the Pi. There are a variety of tutorials on doing that, [here's one](https://desertbot.io/blog/ssh-into-pi-zero-over-usb).
+You'll need to have SSH access to the Pi, and it will need access to the Internet. There are a variety of tutorials on doing that, [here's one](https://desertbot.io/blog/headless-pi-zero-w-wifi-setup-windows).
 
 Assuming you're using the default `pi` user on Raspbian (Buster), SSH to the pi and run:
 
