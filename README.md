@@ -92,7 +92,7 @@ Assuming you're using the default `pi` user on Raspbian (Buster), SSH to the pi 
 sudo apt-get install python3-pip python3-dev
 wget -O inkystock.zip https://github.com/duggan/inkystock/archive/main.zip
 unzip inkystock.zip
-cd inkystock-develop
+cd inkystock-main
 make install
 ```
 
