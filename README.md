@@ -19,6 +19,7 @@ Shows the most recent price, its change since the last trading day, and a cat wi
 #### Chart
 Displaying the last 7 days of activity.
 
+### Customizing
 You can fairly easily customize some parts of the UI in `config.ini`; changing the mascot ( goodbye, pixelcat :< ), the fonts, etc.
 
 For example:
