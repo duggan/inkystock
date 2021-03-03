@@ -71,6 +71,7 @@ The hardware is fortunately very simple, and all just slots together, no solderi
 
  * [InkyPHAT eInk display](https://shop.pimoroni.com/products/inky-phat?variant=12549254938707)
  * [Raspberry Pi Zero WH](https://shop.pimoroni.com/products/raspberry-pi-zero-wh-with-pre-soldered-header)
+ * [microSD card](https://shop.pimoroni.com/products/noobs-32gb-microsd-card-3-1?variant=31703694245971)  
  * Micro-B USB Cable (to connect to power supply)
  * A Pretty Case (Optional)
 
