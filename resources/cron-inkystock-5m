@@ -1,0 +1,1 @@
+*/5     * * * *     pi      cd /home/pi/inkystock && ./run.sh

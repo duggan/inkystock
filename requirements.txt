@@ -1,0 +1,8 @@
+pydantic
+requests
+SQLAlchemy
+pillow
+matplotlib
+pycoingecko
+forex-python
+inky
