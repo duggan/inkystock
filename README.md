@@ -8,6 +8,17 @@ A monochrome mini-display for stocks or cryptocurrency.
 
 InkyStock lets you display a stock or cryptocurrency value on a little **1-bit** display in a corner of your desk, or perhaps dangling from one of the many chandeliers in your crypto-billionaire prepper-palace in New Zealand.
 
+### UI
+
+#### Status Bar
+Shows the coin, currency, and date/time the screen was last updated.
+#### Ticker Bar
+Shows recent price changes.
+#### Headline
+Shows the most recent price, its change since the last trading day, and a cat with a suitable level of concern/satisfaction depending on the direction.
+#### Chart
+Displaying the last 7 days of activity.
+
 You can fairly easily customize some parts of the UI in `config.ini`; changing the mascot ( goodbye, pixelcat :< ), the fonts, etc.
 
 For example:
