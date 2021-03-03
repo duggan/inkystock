@@ -1,6 +1,6 @@
 # InkyStock
 
-A monochrome mini-display for stocks or cryptocurrency.
+A monochrome mini-display for cryptocurrency, stocks, and maybe more 😘
 
 ![A photo showing the project in action](./resources/docs/IMG_3646.jpeg)
 
