@@ -4,5 +4,6 @@ SQLAlchemy
 pillow
 matplotlib
 pycoingecko
+RPi.GPIO
 forex-python
 inky

@@ -4,6 +4,7 @@ deploy:
 	rsync --delete --progress -av --exclude data --exclude .env . pi@pizero1:inkystock/
 install:
 	python3 -m pip install -r requirements.txt
+	mkdir -p data
 cron.5m:
 	cp -f resources/cron-inkystock-5m /etc/cron.d/cron-inkystock
 dev:

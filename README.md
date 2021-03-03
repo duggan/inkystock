@@ -89,8 +89,13 @@ You'll need to have SSH access to the Pi, and it will need access to the Interne
 
 Assuming you're using the default `pi` user on Raspbian (Buster), SSH to the pi and run:
 
+```
+sudo raspi-config nonint do_spi 0
+sudo raspi-config nonint do_i2c 0
+```
+
 ```bash
-sudo apt-get install python3-pip python3-dev
+sudo apt-get install -y libtiff-dev libopenjp2-7-dev libatlas-base-dev libpython3-pip python3-dev
 wget -O inkystock.zip https://github.com/duggan/inkystock/archive/main.zip
 unzip inkystock.zip
 cd inkystock-main
@@ -100,6 +105,12 @@ make install
 Now you'll want to modify `config.ini` to suit, adding IEX Cloud API key information if you want to use it for stocks.
 
 You can perform a test run by executing `./run.sh`. If it's set up correctly, you should see your screen updated within 10 seconds or so. If not, the error messages will hopefully be helpful enough to point you in the right direction.
+
+If you see an error like the following:
+
+> RuntimeError: No EEPROM detected! You must manually initialise your Inky board.
+
+then it may be worth [trying the inky "one line installer" from the Pimoroni tutorial.](https://learn.pimoroni.com/tutorial/sandyj/getting-started-with-inky-phat)
 
 When you're happy it's working, you can install a cron job to update the screen every 5 minutes:
 ```bash

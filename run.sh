@@ -7,4 +7,4 @@ if [ -f .env ] ; then
   set +o allexport
 fi
 
-python3 main.py --config data/config.ini
+python3 main.py --config config.ini
