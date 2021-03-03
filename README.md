@@ -4,20 +4,6 @@ A monochrome mini-display for stocks or cryptocurrency.
 
 ![A photo showing the project in action](./resources/docs/IMG_3646.jpeg)
 
-## Disclaimer
-
-I feel silly putting this disclaimer here, but:
-
-**This project intended for entertainment purposes only.**
-
-It is not intended to be investment advice. Seek a duly licensed professional for investment advice.
-
-Just in case you were thinking of building a financial strategy based on a cat-meme hobby project 😅
-
-It is also very much a work-in-progress / testing ground for things I wanted to play around with (like Pydantic, writing a layout engine, etc).
-
-![Now, back to the good part!](./resources/docs/now_back_to_the_good_part.gif)
-
 ## Intro
 
 InkyStock lets you display a stock or cryptocurrency value on a little **1-bit** display in a corner of your desk, or perhaps dangling from one of the many chandeliers in your crypto-billionaire prepper-palace in New Zealand.
@@ -52,6 +38,20 @@ It could be used for more than showing stock prices! It's got a basic UI framewo
 For example, a simple swap out of stocks for COVID-19 vaccination data (see [resources/examples/vaccines.py](resources/examples/vaccines.py)):
 
 ![UI with Ireland COVID-19 Vaccination Rate](./resources/docs/vaccine.png)
+
+## Disclaimer
+
+I feel silly putting this disclaimer here, but:
+
+**This project intended for entertainment purposes only.**
+
+It is not intended to be investment advice. Seek a duly licensed professional for investment advice.
+
+Just in case you were thinking of building a financial strategy based on a cat-meme hobby project 😅
+
+It is also very much a work-in-progress / testing ground for things I wanted to play around with (like Pydantic, writing a layout engine, etc).
+
+![Now, back to the good part!](./resources/docs/now_back_to_the_good_part.gif)
 
 ## Getting started
 
