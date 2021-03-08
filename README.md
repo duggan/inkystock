@@ -1,69 +1,8 @@
 # InkyStock
 
-A monochrome mini-display for cryptocurrency, stocks, and maybe more 😘
+A tiny, hackable, Raspberry Pi Zero powered e-ink display for cryptocurrency, stocks and more. Written in Python 🐍
 
 ![A photo showing the project in action](./resources/docs/IMG_3646.jpeg)
-
-## Intro
-
-InkyStock lets you display a stock or cryptocurrency value on a little **1-bit** display in a corner of your desk, or perhaps dangling from one of the many chandeliers in your crypto-billionaire prepper-palace in New Zealand.
-
-### UI
-
-#### Status Bar
-Shows the coin, currency, and date/time the screen was last updated.
-#### Ticker Bar
-Shows recent price changes.
-#### Headline
-Shows the most recent price, its change since the last trading day, and a cat with a suitable level of concern/satisfaction depending on the direction.
-#### Chart
-Displaying the last 7 days of activity.
-
-### Customizing
-You can fairly easily customize some parts of the UI in `config.ini`; changing the mascot ( goodbye, pixelcat :< ), the fonts, etc.
-
-For example:
-
-| Happening           | Cat                                                       |
-|---------------------|-----------------------------------------------------------|
-| Price goes up       | ![happy cat](./resources/pixelcat/pixelcat_cool.png)      |
-| Price goes down     | ![worried cat](./resources/pixelcat/pixelcat_worried.png) |
-| Market closed / no movement | ![sleeping cat](./resources/pixelcat/pixelcat_sleeping.png) |
-
-In crypto-land, however, *the market never closes*, so you'll probably never see sleeping cat. No rest for the proletariat!
-
-These are controlled via these values in `config.ini`:
-
-```ini
-[Mascot]
-increasing = ./resources/pixelcat/pixelcat_cool.png
-decreasing = ./resources/pixelcat/pixelcat_worried.png
-static = ./resources/pixelcat/pixelcat_sleeping.png
-```
-
-The important thing is that to display correctly, they need to be 1-bit images, and quite small (about 25x25 pixels). It's small enough that the images need to be designed for that resolution (pixel art). Resizing large images probably won't get you a result you'll be happy with.
-
-[Brandon James Greer has a good introduction/tutorial to the concept](https://www.youtube.com/watch?v=0BZwEoj50uw) if you fancy trying your hand at it. Otherwise Google, Shutterstock, etc., are your friend!
-
-It could be used for more than showing stock prices! It's got a basic UI framework, and can be modified to use other data.
-
-For example, a simple swap out of stocks for COVID-19 vaccination data (see [resources/examples/vaccines.py](resources/examples/vaccines.py)):
-
-![UI with Ireland COVID-19 Vaccination Rate](./resources/docs/vaccine.png)
-
-## Disclaimer
-
-I feel silly putting this disclaimer here, but:
-
-**This project intended for entertainment purposes only.**
-
-It is not intended to be investment advice. Seek a duly licensed professional for investment advice.
-
-Just in case you were thinking of building a financial strategy based on a cat-meme hobby project 😅
-
-It is also very much a work-in-progress / testing ground for things I wanted to play around with (like Pydantic, writing a layout engine, etc).
-
-![Now, back to the good part!](./resources/docs/now_back_to_the_good_part.gif)
 
 ## Getting started
 
@@ -120,6 +59,51 @@ When you're happy it's working, you can install a cron job to update the screen 
 ```bash
 sudo make cron.5m
 ```
+
+## UI
+
+### Status Bar
+Shows the coin, currency, and date/time the screen was last updated.
+### Ticker Bar
+Shows recent price changes.
+### Headline
+Shows the most recent price, its change since the last trading day, and a cat with a suitable level of concern/satisfaction depending on the direction.
+### Chart
+Displaying the last 7 days of activity.
+
+## Customizing
+You can fairly easily customize some parts of the UI in `config.ini`; changing the mascot ( goodbye, pixelcat :< ), the fonts, etc.
+
+For example:
+
+| Happening           | Cat                                                       |
+|---------------------|-----------------------------------------------------------|
+| Price goes up       | ![happy cat](./resources/pixelcat/pixelcat_cool.png)      |
+| Price goes down     | ![worried cat](./resources/pixelcat/pixelcat_worried.png) |
+| Market closed / no movement | ![sleeping cat](./resources/pixelcat/pixelcat_sleeping.png) |
+
+In crypto-land, however, *the market never closes*, so you'll probably never see sleeping cat. No rest for the proletariat!
+
+These are controlled via these values in `config.ini`:
+
+```ini
+[Mascot]
+increasing = ./resources/pixelcat/pixelcat_cool.png
+decreasing = ./resources/pixelcat/pixelcat_worried.png
+static = ./resources/pixelcat/pixelcat_sleeping.png
+```
+
+The important thing is that to display correctly, they need to be 1-bit images, and quite small (about 25x25 pixels). It's small enough that the images need to be designed for that resolution (pixel art). Resizing large images probably won't get you a result you'll be happy with.
+
+[Brandon James Greer has a good introduction/tutorial to the concept](https://www.youtube.com/watch?v=0BZwEoj50uw) if you fancy trying your hand at it. Otherwise Google, Shutterstock, etc., are your friend!
+
+It could be used for more than showing stock prices! It's got a basic UI framework, and can be modified to use other data.
+
+For example, a simple swap out of stocks for COVID-19 vaccination data (see [resources/examples/vaccines.py](resources/examples/vaccines.py)):
+
+![UI with Ireland COVID-19 Vaccination Rate](./resources/docs/vaccine.png)
+
+
 
 ## Credits
 
@@ -222,3 +206,15 @@ Providers tried/rejected:
 
 * **Alpha Vantage**: only supports historical data
 * **Coindesk**: only supports Bitcoin
+
+## Disclaimer
+
+I feel silly putting this disclaimer here, but:
+
+**This project intended for entertainment purposes only.**
+
+It is not intended to be investment advice. Seek a duly licensed professional for investment advice.
+
+Just in case you were thinking of building a financial strategy based on a cat-meme hobby project 😅
+
+It is also very much a work-in-progress / testing ground for things I wanted to play around with (like Pydantic, writing a layout engine, etc).
