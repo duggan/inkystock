@@ -52,38 +52,44 @@ class Image(Element):
 class PillowImage(Image):
 
     def __init__(self, im: PILImage):
-        self._image = im
+        self.image = im
 
     def __repr__(self):
         return f"(PillowImage size={self.size()})"
 
     def size(self) -> Tuple[int, int]:
-        return self._image.size
+        return self.image.size
 
     def open(self, fp):
-        return self._image.open(fp)
+        self.image.open(fp)
+        return self
 
     def save(self, fp, fmt=None):
-        return self._image.save(fp, format=fmt)
+        self.image.save(fp, format=fmt)
+        return self
 
     def rotate(self, degrees):
-        return self._image.rotate(degrees)
+        log.debug(f"Rotating image {degrees} degrees")
+        self.image = self.image.rotate(degrees)
+        return self
 
     def invert(self):
-        inverted = PILImage.new('1', self._image.size)
+        log.debug("Inverting image colours")
+        inverted = PILImage.new('1', self.image.size)
         remapped = []
         pxmap = {0: 2, 1: 0, 2: 0, 255: 0}
-        for px in self._image.getdata():
+        for px in self.image.getdata():
             remapped.append(pxmap[px])
         inverted.putdata(remapped)
-        return inverted
+        self.image = inverted
+        return self
 
     def border(self, border: Border):
         if border == Border():
-            return self._image
+            return self
         log.debug(f"Drawing {border}")
 
-        draw = PILDraw.Draw(self._image)
+        draw = PILDraw.Draw(self.image)
         width, height = self.size()
 
         if border.left:
@@ -96,12 +102,11 @@ class PillowImage(Image):
         if border.bottom:
             draw.line([(0, height - border.bottom), (width, height - border.bottom)], fill=Color.BLACK,
                       width=border.bottom)
-
-        return self._image
+        return self
 
     def render(self) -> PILImage.Image:
         # FIXME: this should return a bytearray or something else generic
-        return self._image
+        return self.image
 
 
 class Text(Element):
@@ -204,7 +209,7 @@ class Pillow(Painter):
         points = [apex, left, right]
 
         poly = self.polygon(size, points)
-        return PillowImage(poly.rotate(rotate))
+        return poly.rotate(rotate)
 
     def line(self, size: Tuple[int, int]):
         canvas = PILImage.new('1', size, Color.WHITE)
@@ -221,7 +226,7 @@ class Pillow(Painter):
 
     def display(self, image: PillowImage):
         board = auto()
-        board.set_image(image.invert())
+        board.set_image(image.invert().render())
         board.show()
 
     def paint(self, size: Tuple[int, int], layout: LayoutList):
@@ -230,7 +235,7 @@ class Pillow(Painter):
             if type(element) is Container:
                 content = self.paint(element.size(), Layout(element).layout())
                 bordered = PillowImage(content.render()).border(element.border)
-                canvas.paste(bordered, (position.x, position.y))
+                canvas.paste(bordered.render(), (position.x, position.y))
             else:
                 image = element.render()
                 log.info(f"Rendering {element} to canvas, size: {image.size} position: {position}")

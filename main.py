@@ -105,6 +105,9 @@ def main():
     # An image object is created based on the layout
     size = (config.main.display_width_pixels, config.main.display_height_pixels)
     image = painter.paint(size, layout)
+    # Rotate the image if configured
+    if config.main.rotate_display:
+        image.rotate(config.main.rotate_display)
     # The resulting image is saved locally for optional inspection
     image.render().save(config.outputs.local)
 

@@ -18,6 +18,7 @@ class MainConfig(BaseModel):
     display_width_pixels: int = 212
     display_height_pixels: int = 104
     display_diagonal_inches: float = 2.13
+    rotate_display: int = 0
     loglevel: str = "INFO"
 
     @validator('currency')
