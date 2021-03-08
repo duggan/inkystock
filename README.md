@@ -60,6 +60,47 @@ When you're happy it's working, you can install a cron job to update the screen 
 sudo make cron.5m
 ```
 
+## Configure
+
+### Crypto
+
+The default configuration in `config.ini` will show the current price of one Bitcoin in Euro:
+
+```ini
+[Main]
+currency = EUR
+crypto = BTC
+database = sqlite:///data/inkystock.db
+provider = CoinGecko
+
+# Other config
+...
+```
+
+Here you can change the currency or the cryptocurrency that will be tracked. History is tracked in an SQLite database.
+
+### Stocks
+
+To configure stocks, remove or comment out the `crypto` property and replace with `stock`, and update the provider details:
+
+```ini
+[Main]
+currency = EUR
+# crypto = BTC
+stock = AAPL
+database = sqlite:///data/inkystock.db
+# provider = CoinGecko
+provider = IEX
+
+[IEX]
+token = YOUR_IEX_TOKEN
+
+# Other config
+...
+```
+
+At present, the only supported stock provider is IEX Cloud. You can register for a free key/token [here](https://iexcloud.io/).
+
 ## UI
 
 ### Status Bar
