@@ -10,11 +10,11 @@ class ConfigurationException(ValueError):
 
 
 class MainConfig(BaseModel):
-    currency = "USD"
-    database = "sqlite://"
+    currency = "EUR"
+    database = "sqlite:////tmp/inkystock.db"
     stock: str = ""
-    crypto: str = ""
-    provider: str = "AlphaVantage"
+    crypto: str = "BTC"
+    provider: str
     display_width_pixels: int = 212
     display_height_pixels: int = 104
     display_diagonal_inches: float = 2.13
@@ -49,22 +49,22 @@ class MainConfig(BaseModel):
 
 
 class FontsConfig(BaseModel):
-    ticker: str
-    ticker_size: int
-    headline: str
-    headline_size: int
-    symbol: str
-    symbol_size: int
-    statusbar: str
-    statusbar_size: int
-    chart: str
-    chart_size: float
+    ticker: str = "./resources/fonts/04B_03__.TTF"
+    ticker_size: int = 8
+    symbol: str = "./resources/fonts/04B_21__.TTF"
+    symbol_size: int = 10
+    statusbar: str = "./resources/fonts/CozetteVector.ttf"
+    statusbar_size: int = 12
+    headline: str = "./resources/fonts/04B_30__.TTF"
+    headline_size: int = 30
+    chart: str = "./resources/fonts/04B_03__.TTF"
+    chart_size: float = 5.2
 
 
 class MascotConfig(BaseModel):
-    increasing: str
-    decreasing: str
-    static: str
+    increasing: str = "./resources/pixelcat/pixelcat_cool.png"
+    decreasing: str = "./resources/pixelcat/pixelcat_worried.png"
+    static: str = "./resources/pixelcat/pixelcat_sleeping.png"
 
 
 class IEXConfig(BaseModel):

@@ -62,6 +62,8 @@ sudo make cron.5m
 
 ## Configure
 
+See the comments in `config.ini` for additional documentation of options.
+
 ### Crypto
 
 The default configuration in `config.ini` will show the current price of one Bitcoin in Euro:
