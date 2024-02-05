@@ -39,7 +39,8 @@ sudo raspi-config nonint do_i2c 0
 Install dependencies and app:
 ```bash
 sudo apt update
-sudo apt-get install -y libtiff-dev libopenjp2-7-dev libatlas-base-dev python3-pip python3-dev
+sudo apt-get install -y libtiff-dev libopenjp2-7-dev libatlas-base-dev libopenblas-dev python3-pip python3-dev
+
 wget -O inkystock.zip https://github.com/duggan/inkystock/archive/main.zip
 unzip inkystock.zip && mv inkystock-main inkystock
 cd inkystock
