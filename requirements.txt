@@ -1,7 +1,7 @@
-pydantic==1.10.14
+pydantic~=1.10.14
 requests
-SQLAlchemy==1.4.51
-pillow
+SQLAlchemy~=1.4.51
+pillow>=10.0.0
 matplotlib
 pycoingecko
 RPi.GPIO

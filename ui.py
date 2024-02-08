@@ -50,7 +50,7 @@ class StatusBar(UI):
         # Status Bar Boxes
         status_bar_left = Container(width=int(self.config.main.display_width_pixels / 2),
                                     display=Display.INLINE,
-                                    padding=Padding(top=1, bottom=1),
+                                    padding=Padding(bottom=1),
                                     name="status_bar_left")
 
         # Stock symbol and currency conversion information
@@ -182,7 +182,7 @@ class Headline(UI):
         headline_right.add(mascot_image)
 
         headline = Container(display=Display.INLINE,
-                             padding=Padding(top=2, right=2))
+                             padding=Padding(right=2))
         headline.add(headline_left)
         headline.add(headline_right)
 
@@ -208,7 +208,7 @@ class Chart(UI):
 
         chart_box = Container(chart.width(),
                               chart.height(),
-                              padding=Padding(top=1, left=1),
+                              padding=Padding(top=1, left=1, bottom=1),
                               name="chart")
         chart_box.add(chart)
         return chart_box
