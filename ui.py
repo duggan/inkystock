@@ -153,7 +153,9 @@ class Headline(UI):
         if self.change > 999:
             change = f"{int(self.change):+}"
         movement_text = self.paint_movement(change)
-        movement = Container(display=Display.BLOCK, name="movement")
+        movement = Container(display=Display.BLOCK,
+                             name="movement",
+                             padding=Padding(top=2))
         spacer = Container(height=2, name="spacer")
 
         if self.change > 0:
@@ -178,7 +180,8 @@ class Headline(UI):
         headline_left.add(movement)
 
         headline_right = Container(width=25,
-                                   align=Align.RIGHT)
+                                   align=Align.RIGHT,
+                                   padding=Padding(top=2))
         headline_right.add(mascot_image)
 
         headline = Container(display=Display.INLINE,
