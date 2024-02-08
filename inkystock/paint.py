@@ -181,23 +181,20 @@ class Pillow(Painter):
         # Initialize the font
         ttf = PILFont.truetype(font, int(font_size))
 
-        # There is some unintuitive behaviour around how TrueType (maybe others, idk) render
-        # to the canvas; something to do with spacing for italics, ligatures, etc? Whatever it is, using the
-        # offset helps get a piece of text with less spurious whitespace. This will probably break
-        # subtly, but it works for the sizes and fonts I've tried.
-        offset = ttf.getoffset(text)
-
         # Get the dimensions of the font that *would* be rendered, then create a temporary canvas
         # with those dimensions to draw on.
-        size = ttf.getsize(text)
+        bbox = ttf.getbbox(text)
+        width = bbox[2] - bbox[0]
+        height = bbox[3]  # have to ignore bbox[1] because it produces cropped text
+        size = (width, height)
+        log.debug(f"Bounding box for {text}: {bbox}, size: {size}")
         canvas = PILImage.new('1', size, Color.WHITE)
         draw = PILDraw.Draw(canvas)
 
-        # Draw the text to the temporary canvas. This wil
+        # Draw the text to the temporary canvas.
         draw.text((0, 0), text, Color.BLACK, font=ttf)
-        result = canvas.crop((offset[0], offset[1], size[0], size[1]))
 
-        return Text(image=PillowImage(result), text=text, font=font, font_size=font_size)
+        return Text(image=PillowImage(canvas), text=text, font=font, font_size=font_size)
 
     def triangle(self, size: Tuple[int, int], rotate: int = 0) -> Image:
         width = size[0]

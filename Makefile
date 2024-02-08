@@ -1,17 +1,18 @@
-.PHONY: deploy install dev codestyle mypy test
+.PHONY: deps install dev codestyle mypy test
 
-deploy:
-	rsync --delete --progress -av --exclude data --exclude .env . pi@pizero1:inkystock/
+deps:
+	apt-get install -y libtiff-dev libopenjp2-7-dev libatlas-base-dev libopenblas-dev python3-pip python3-dev python3-venv
 install:
-	python3 -m pip install -r requirements.txt
+	test -d .venv || python3 -m venv .venv
+	. .venv/bin/activate && python -m pip install -r requirements.txt
 	mkdir -p data
 cron.5m:
 	cp -f resources/cron-inkystock-5m /etc/cron.d/cron-inkystock
 dev:
-	python3 -m pip install --no-deps -r dev-requirements.txt
+	. .venv/bin/activate && python -m pip install --no-deps -r dev-requirements.txt
 codestyle:
-	python3 -m pycodestyle --max-line-length=120 ./
+	. .venv/bin/activate && python -m pycodestyle --max-line-length=120 ./
 mypy:
-	python3 -m mypy --namespace-packages --ignore-missing-imports --follow-imports=skip --strict-optional ./
+	. .venv/bin/activate && python -m mypy --namespace-packages --ignore-missing-imports --follow-imports=skip --strict-optional ./
 
 test: codestyle mypy
