@@ -7,7 +7,7 @@ install:
 	. .venv/bin/activate && python -m pip install -r requirements.txt
 	mkdir -p data
 cron.5m:
-	cp -f resources/cron-inkystock-5m /etc/cron.d/cron-inkystock
+	cp -f resources/cron-inkystock-5m /etc/cron.d/cron-inkystock && sed -i s/username/${SUDO_USER}/g /etc/cron.d/cron-inkystock
 dev:
 	. .venv/bin/activate && python -m pip install --no-deps -r dev-requirements.txt
 codestyle:
