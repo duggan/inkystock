@@ -2,6 +2,10 @@
 
 A tiny, hackable, Raspberry Pi Zero powered e-ink display for cryptocurrency, stocks and more. Written in Python 🐍
 
+Works with [Raspberry Pi OS (64-bit)](https://www.raspberrypi.com/software/operating-systems/), Raspberry Pi Zero 2W, and Inky pHAT Black & White, and Black, white and colour.
+
+Full install last tested on **9th Feburary, 2024**.
+
 ![A photo showing the project in action](./resources/docs/IMG_3646.jpeg)
 
 ## Getting started
@@ -9,7 +13,7 @@ A tiny, hackable, Raspberry Pi Zero powered e-ink display for cryptocurrency, st
 The hardware is fortunately very simple, and all just slots together, no soldering, etc. Not too many parts either:
 
  * [InkyPHAT eInk display](https://shop.pimoroni.com/products/inky-phat?variant=12549254938707)
- * [Raspberry Pi Zero WH](https://shop.pimoroni.com/products/raspberry-pi-zero-wh-with-pre-soldered-header)
+ * [Raspberry Pi Zero WH](https://shop.pimoroni.com/products/raspberry-pi-zero-wh-with-pre-soldered-header) or Raspberry Pi Zero 2 (with headers).
  * [microSD card](https://shop.pimoroni.com/products/noobs-32gb-microsd-card-3-1?variant=31703694245971)  
  * Micro-B USB Cable (to connect to power supply)
  * A Pretty Case (Optional)
