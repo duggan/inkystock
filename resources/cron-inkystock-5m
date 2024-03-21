@@ -1,1 +1,1 @@
-*/5     * * * *     username      cd /homeusername/inkystock && ./run.sh
+*/5     * * * *     username      cd /home/username/inkystock && ./run.sh
