@@ -63,7 +63,7 @@ class Chart(Element):
         """
         diagonal_resolution_px = sqrt(pow(self.config.main.display_width_pixels, 2) +
                                       pow(self.config.main.display_height_pixels, 2))
-        return float(int(diagonal_resolution_px / self.config.main.display_diagonal_inches))
+        return diagonal_resolution_px / self.config.main.display_diagonal_inches
 
     def size(self):
         return self.render().size
@@ -94,11 +94,13 @@ class Chart(Element):
 
         if self.config.main.color in ['red', 'yellow']:
             palette = Palette.color()
+            num_colors = 3
         else:
             palette = Palette.black_and_white()
+            num_colors = 2
 
         with io.BytesIO() as f:
             self.fig.savefig(f, dpi=self.dpi(), pad_inches=0, bbox_inches='tight')
             chart = Image.open(f).convert('RGB')
-            self._cache = chart.quantize(palette=palette)
+            self._cache = chart.quantize(colors=num_colors, palette=palette, dither=Image.Dither.NONE)
             return self._cache
