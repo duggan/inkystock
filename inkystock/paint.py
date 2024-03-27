@@ -33,8 +33,8 @@ class PaletteData:
     Create palette. Must contain 768 integer values
     via @rferrese @ https://github.com/pimoroni/inky/issues/10#issuecomment-742273715
     """
-    BLACK_AND_WHITE = PALETTE_BLACK_AND_WHITE + [0] * (768 - len(PALETTE_BLACK_AND_WHITE))
-    COLOR = PALETTE_COLOR + [0] * (768 - len(PALETTE_COLOR))
+    BLACK_AND_WHITE = PALETTE_BLACK_AND_WHITE + [0, 0, 0] * 254
+    COLOR = PALETTE_COLOR + [0, 0, 0] * 253
 
 
 class Palette:

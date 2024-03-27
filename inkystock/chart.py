@@ -92,13 +92,13 @@ class Chart(Element):
         if self._cache:
             return self._cache
 
+        if self.config.main.color in ['red', 'yellow']:
+            palette = Palette.color()
+        else:
+            palette = Palette.black_and_white()
+
         with io.BytesIO() as f:
             self.fig.savefig(f, dpi=self.dpi(), pad_inches=0, bbox_inches='tight')
             chart = Image.open(f).convert('RGB')
-            if self.config.main.color in ['red', 'yellow']:
-                palette = Palette.color()
-            else:
-                palette = Palette.black_and_white()
-            # Quantize (change to dither=1 if you want dithering)
-            self._cache = chart.quantize(palette=palette, dither=0)
+            self._cache = chart.quantize(palette=palette)
             return self._cache
