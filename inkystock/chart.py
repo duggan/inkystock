@@ -8,6 +8,7 @@ from matplotlib import font_manager, ticker
 from inkystock.config import Config
 from inkystock.layout import Element
 from inkystock.stocks.base import Series
+from inkystock.paint import Palette
 
 
 class Chart(Element):
@@ -24,8 +25,16 @@ class Chart(Element):
         px = 1.2 / self.dpi()
 
         # Dock some pixels for the labels (approx, will be affected by font size)
-        w = width - 10
-        h = height - 10
+        if self.config.main.display_width_pixels > 212:
+            w_offset = 20
+        else:
+            w_offset = 10
+        if self.config.main.display_height_pixels > 104:
+            h_offset = 5
+        else:
+            h_offset = 10
+        w = width - w_offset
+        h = height - h_offset
         self.fig, self.ax = plt.subplots(figsize=(w*px, h*px))
 
         # Configure font
@@ -54,7 +63,7 @@ class Chart(Element):
         """
         diagonal_resolution_px = sqrt(pow(self.config.main.display_width_pixels, 2) +
                                       pow(self.config.main.display_height_pixels, 2))
-        return diagonal_resolution_px / self.config.main.display_diagonal_inches
+        return float(int(diagonal_resolution_px / self.config.main.display_diagonal_inches))
 
     def size(self):
         return self.render().size
@@ -76,7 +85,8 @@ class Chart(Element):
         self.ax.plot(x, y,
                      linewidth=1,
                      linestyle='solid',
-                     solid_joinstyle='miter')
+                     solid_joinstyle='miter',
+                     color=self.config.main.color)
 
     def render(self):
         if self._cache:
@@ -84,5 +94,11 @@ class Chart(Element):
 
         with io.BytesIO() as f:
             self.fig.savefig(f, dpi=self.dpi(), pad_inches=0, bbox_inches='tight')
-            self._cache = Image.open(f).convert('1', dither=0)
+            chart = Image.open(f).convert('RGB')
+            if self.config.main.color in ['red', 'yellow']:
+                palette = Palette.color()
+            else:
+                palette = Palette.black_and_white()
+            # Quantize (change to dither=1 if you want dithering)
+            self._cache = chart.quantize(palette=palette, dither=0)
             return self._cache

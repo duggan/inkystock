@@ -35,7 +35,11 @@ def main():
     args = parser.parse_args()
 
     config = Config(env_vars=env_vars, path=args.config)
+
     log = setup_logging(config.main.loglevel)
+
+    log.info(f"Configured resolution: {config.main.display_width_pixels}x{config.main.display_height_pixels}")
+    log.info(f"Configured color: {config.main.color}")
 
     db = Database(config)
 
@@ -65,7 +69,7 @@ def main():
     recent = db.recent()
 
     # the painter is responsible for turning the layout we're specifying into pixels
-    painter = Pillow()
+    painter = Pillow(config)
 
     # The details (elements, layout, etc) of UI components are specified in ui.py.
     # This hopefully makes the relationship between the data and its layout clearer.

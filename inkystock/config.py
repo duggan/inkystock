@@ -1,8 +1,8 @@
 import os
 from configparser import ConfigParser
-from typing import List, Optional
-
+from typing import List, Optional, Union
 from pydantic import BaseModel, validator, HttpUrl
+from inky.auto import auto
 
 
 class ConfigurationException(ValueError):
@@ -15,11 +15,33 @@ class MainConfig(BaseModel):
     stock: str = ""
     crypto: str = "BTC"
     provider: str
-    display_width_pixels: int = 212
-    display_height_pixels: int = 104
+    display_width_pixels: Union[int,str] = 'auto'
+    display_height_pixels: Union[int,str] = 'auto'
     display_diagonal_inches: float = 2.13
     rotate_display: int = 0
     loglevel: str = "INFO"
+    color: str = 'auto'
+
+    @validator('display_width_pixels', pre=True, always=True)
+    def auto_display_width(cls, v):
+        if not v or v == 'auto':
+            display = auto()
+            return display.resolution[0]
+        return v
+
+    @validator('display_height_pixels', pre=True, always=True)
+    def auto_display_height(cls, v):
+        if not v or v == 'auto':
+            display = auto()
+            return display.resolution[1]
+        return v
+
+    @validator('color', pre=True, always=True)
+    def auto_color(cls, v):
+        if not v or v == 'auto':
+            display = auto()
+            return display.colour
+        return v
 
     @validator('currency')
     def currency_is_upper(cls, v):
