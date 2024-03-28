@@ -6,7 +6,7 @@ Works with [Raspberry Pi OS (64-bit)](https://www.raspberrypi.com/software/opera
 
 Full install last tested on **9th Feburary, 2024**.
 
-![A photo showing the project in action](./resources/docs/IMG_3646.jpeg)
+![A photo showing the project in action](./resources/docs/IMG_8814.jpeg)
 
 ## Getting started
 
@@ -20,7 +20,7 @@ The hardware is fortunately very simple, and all just slots together, no solderi
 
 You can buy off the shelf Raspberry Pi Zero cases. The official one looks like it would work, and the InkyPHAT tutorial uses a [Pibow](https://shop.pimoroni.com/products/pibow-zero-w) case. If you have access to a 3D printer, [this is the case I've used (pictured above)](https://www.thingiverse.com/thing:4054844).
 
-You might notice there are other InkyPHAT displays with more colors (yellow/red)! InkyStock should display correctly on those, too, though it will still just show as black and white.
+You might notice there are Inky pHAT displays with either color or black & white. InkyStock should display correctly on either, with the trend line in color on the color displays.
 
 Cryptocurrency data is sourced from [CoinGecko](https://www.coingecko.com/), who very helpfully provide a free API.
 
