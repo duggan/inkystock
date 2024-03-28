@@ -17,9 +17,44 @@ from inkystock.layout import LayoutList, Container, Layout, Border
 log = logging.getLogger("inkystock")
 
 
+PALETTE_BLACK_AND_WHITE = [
+    255, 255, 255,
+    0, 0, 0,
+]
+PALETTE_COLOR = [
+    255, 255, 255,
+    0, 0, 0,
+    255, 0, 0
+]
+
+
+class PaletteData:
+    """
+    Create palette. Must contain 768 integer values
+    via @rferrese @ https://github.com/pimoroni/inky/issues/10#issuecomment-742273715
+    """
+    BLACK_AND_WHITE = PALETTE_BLACK_AND_WHITE + [0, 0, 0] * 254
+    COLOR = PALETTE_COLOR + [0, 0, 0] * 253
+
+
+class Palette:
+    """
+    Helper class for creating palettes to inject into image objects
+    """
+    def black_and_white():
+        palette = PILImage.new('P', (1,1))
+        palette.putpalette(PaletteData.BLACK_AND_WHITE)
+        return palette
+
+    def color():
+        palette = PILImage.new('P', (1,1))
+        palette.putpalette(PaletteData.COLOR)
+        return palette
+
+
 class Color:
-    BLACK = 0
-    WHITE = 1
+    BLACK = 1
+    WHITE = 0
 
 
 class Image(Element):
@@ -34,10 +69,6 @@ class Image(Element):
 
     @abc.abstractmethod
     def rotate(self, degrees):
-        pass
-
-    @abc.abstractmethod
-    def invert(self):
         pass
 
     @abc.abstractmethod
@@ -71,17 +102,6 @@ class PillowImage(Image):
     def rotate(self, degrees):
         log.debug(f"Rotating image {degrees} degrees")
         self.image = self.image.rotate(degrees)
-        return self
-
-    def invert(self):
-        log.debug("Inverting image colours")
-        inverted = PILImage.new('1', self.image.size)
-        remapped = []
-        pxmap = {0: 2, 1: 0, 2: 0, 255: 0}
-        for px in self.image.getdata():
-            remapped.append(pxmap[px])
-        inverted.putdata(remapped)
-        self.image = inverted
         return self
 
     def border(self, border: Border):
@@ -164,11 +184,25 @@ class Painter(abc.ABC):
 
 class Pillow(Painter):
 
+    def __init__(self, config):
+        self.config = config
+
+    def canvas(self, size):
+        if self.config.main.color in ['red', 'yellow']:
+            palette = PaletteData.COLOR
+        else:
+            palette = PaletteData.BLACK_AND_WHITE
+        image = PILImage.new('P', size, Color.WHITE)
+        image.putpalette(palette)
+        return image
+
     def new(self, size: Tuple[int, int]):
-        return PillowImage(PILImage.new('1', size, Color.WHITE))
+        canvas = self.canvas(size)
+        return PillowImage(canvas)
 
     def from_file(self, path):
-        return PillowImage(PILImage.open(path))
+        img = PILImage.open(path)
+        return PillowImage(img)
 
     def text(self, text, font: str, font_size: int) -> Text:
         """
@@ -188,7 +222,7 @@ class Pillow(Painter):
         height = bbox[3]  # have to ignore bbox[1] because it produces cropped text
         size = (width, height)
         log.debug(f"Bounding box for {text}: {bbox}, size: {size}")
-        canvas = PILImage.new('1', size, Color.WHITE)
+        canvas = self.canvas(size)
         draw = PILDraw.Draw(canvas)
 
         # Draw the text to the temporary canvas.
@@ -209,13 +243,13 @@ class Pillow(Painter):
         return poly.rotate(rotate)
 
     def line(self, size: Tuple[int, int]):
-        canvas = PILImage.new('1', size, Color.WHITE)
+        canvas = self.canvas(size)
         draw = PILDraw.Draw(canvas)
         draw.line([(0, 0), (size[0], 0)], fill=Color.BLACK, width=size[1])
         return PillowImage(canvas)
 
     def polygon(self, size: Tuple[int, int], points: Sequence) -> Image:
-        canvas = PILImage.new('1', size, Color.WHITE)
+        canvas = self.canvas(size)
         draw = PILDraw.Draw(canvas)
 
         draw.polygon(points, fill=Color.BLACK)
@@ -223,10 +257,14 @@ class Pillow(Painter):
 
     def display(self, image: PillowImage):
         board = auto()
-        board.set_image(image.invert().render())
+        board.set_image(image.render())
         board.show()
 
     def paint(self, size: Tuple[int, int], layout: LayoutList):
+        if self.config.main.color in ['red', 'yellow']:
+            palette = Palette.color()
+        else:
+            palette = Palette.black_and_white()
         canvas = self.new(size).render()
         for position, element in layout:
             if type(element) is Container:
@@ -237,6 +275,10 @@ class Pillow(Painter):
                 image = element.render()
                 log.info(f"Rendering {element} to canvas, size: {image.size} position: {position}")
                 # Use alpha blending where applicable (e.g., mascots)
-                mask = image if image.mode != '1' else None
+                mask = None
+                if image.mode == 'RGBA':
+                    mask = image.split()[3]
+                    image = image.convert('RGB')
+                    image = image.quantize(palette=palette, dither=0)
                 canvas.paste(image, (position.x, position.y), mask=mask)
         return PillowImage(canvas)
