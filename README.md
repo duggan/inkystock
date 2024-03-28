@@ -6,7 +6,7 @@ Works with [Raspberry Pi OS (64-bit)](https://www.raspberrypi.com/software/opera
 
 Full install last tested on **9th Feburary, 2024**.
 
-![A photo showing the project in action](./resources/docs/IMG_3646.jpeg)
+![A photo showing the project in action](./resources/docs/IMG_8814.jpeg)
 
 ## Getting started
 
