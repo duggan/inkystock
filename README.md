@@ -4,7 +4,7 @@ A tiny, hackable, Raspberry Pi Zero powered e-ink display for cryptocurrency, st
 
 Works with [Raspberry Pi OS (64-bit)](https://www.raspberrypi.com/software/operating-systems/), Raspberry Pi Zero 2W, and Inky pHAT Black & White, and Black, white and colour.
 
-Full install last tested on **9th Feburary, 2024**.
+Full install last tested on **27th March, 2024**.
 
 ![A photo showing the project in action](./resources/docs/IMG_8814.jpg)
 
