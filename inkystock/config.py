@@ -14,7 +14,7 @@ class MainConfig(BaseModel):
     database = "sqlite:////tmp/inkystock.db"
     stock: str = ""
     crypto: str = "BTC"
-    provider: str
+    provider: str = "CoinGecko"
     display_width_pixels: Union[int,str] = 'auto'
     display_height_pixels: Union[int,str] = 'auto'
     display_diagonal_inches: float = 2.13
@@ -94,6 +94,25 @@ class IEXConfig(BaseModel):
     token: str
     endpoint: HttpUrl = "https://cloud.iexapis.com/stable"
 
+    @validator('token', 'endpoint')
+    def strip_quotes(cls, v):
+        if v and "'" in v:
+            return v.strip("'")
+        if v and '"' in v:
+            return v.strip('"')
+        return v
+
+class CoinGecko(BaseModel):
+    api_key: str
+
+    @validator('api_key')
+    def strip_quotes(cls, v):
+        if v and "'" in v:
+            return v.strip("'")
+        if v and '"' in v:
+            return v.strip('"')
+        return v
+
 
 class OutputConfig(BaseModel):
     screen: str = "inky"
@@ -132,3 +151,8 @@ class Config:
         self.iex = IEXConfig(token="")
         if self.main.provider == 'IEX':
             self.iex = IEXConfig(**self.__config['IEX'])
+
+        # CoinGecko provider configuration
+        self.coingecko = CoinGecko(api_key="")
+        if self.main.provider == 'CoinGecko':
+            self.coingecko = CoinGecko(**self.__config['CoinGecko'])
