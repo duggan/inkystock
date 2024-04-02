@@ -12,11 +12,11 @@ Full install last tested on **27th March, 2024**.
 
 The hardware is fortunately very simple, and all just slots together, no soldering, etc. Not too many parts either:
 
- * [InkyPHAT eInk display](https://shop.pimoroni.com/products/inky-phat?variant=12549254938707)
- * [Raspberry Pi Zero WH](https://shop.pimoroni.com/products/raspberry-pi-zero-wh-with-pre-soldered-header) or Raspberry Pi Zero 2 (with headers).
- * [microSD card](https://shop.pimoroni.com/products/noobs-32gb-microsd-card-3-1?variant=31703694245971)  
- * Micro-B USB Cable (to connect to power supply)
- * A Pretty Case (Optional)
+- [InkyPHAT eInk display](https://shop.pimoroni.com/products/inky-phat?variant=12549254938707)
+- [Raspberry Pi Zero WH](https://shop.pimoroni.com/products/raspberry-pi-zero-wh-with-pre-soldered-header) or Raspberry Pi Zero 2 (with headers).
+- [microSD card](https://shop.pimoroni.com/products/noobs-32gb-microsd-card-3-1?variant=31703694245971)
+- Micro-B USB Cable (to connect to power supply)
+- A Pretty Case (Optional)
 
 You can buy off the shelf Raspberry Pi Zero cases. The official one looks like it would work, and the InkyPHAT tutorial uses a [Pibow](https://shop.pimoroni.com/products/pibow-zero-w) case. If you have access to a 3D printer, [this is the case I've used (pictured above)](https://www.thingiverse.com/thing:4054844).
 
@@ -35,12 +35,14 @@ Also, it's best to start with a freshly flashed OS; should help avoid any myster
 Assuming you're using the default `pi` user on Raspbian (Buster), SSH to the pi:
 
 Enable SPI and I2C:
+
 ```
 sudo raspi-config nonint do_spi 0
 sudo raspi-config nonint do_i2c 0
 ```
 
 Install dependencies and app:
+
 ```bash
 wget -O inkystock.zip https://github.com/duggan/inkystock/archive/main.zip
 unzip inkystock.zip && mv inkystock-main inkystock
@@ -49,7 +51,9 @@ sudo make deps
 make install
 ```
 
-Now you'll want to modify `config.ini` to suit, adding IEX Cloud API key information if you want to use it for stocks.
+Now you'll want to modify `config.ini` to suit, adding IEX Cloud API key information if you want to use it for stocks, or CoinGecko for crypto.
+
+**Note**: as of **February 2024**, a CoinGecko Demo API key is required, which you can get for free by using the ["Create Demo Account" on their pricing page](https://www.coingecko.com/en/api/pricing).
 
 You can perform a test run by executing `./run.sh`. If it's set up correctly, you should see your screen updated within 10 seconds or so. If not, the error messages will hopefully be helpful enough to point you in the right direction.
 
@@ -60,6 +64,7 @@ If you see an error like the following:
 then it may be worth [trying the inky "one line installer" from the Pimoroni tutorial.](https://learn.pimoroni.com/tutorial/sandyj/getting-started-with-inky-phat)
 
 When you're happy it's working, you can install a cron job to update the screen every 5 minutes:
+
 ```bash
 sudo make cron.5m
 ```
@@ -110,26 +115,34 @@ At present, the only supported stock provider is IEX Cloud. You can register for
 ## UI
 
 ### Status Bar
+
 Shows the coin, currency, and date/time the screen was last updated.
+
 ### Ticker Bar
+
 Shows recent price changes.
+
 ### Headline
+
 Shows the most recent price, its change since the last trading day, and a cat with a suitable level of concern/satisfaction depending on the direction.
+
 ### Chart
+
 Displaying the last 7 days of activity.
 
 ## Customizing
+
 You can fairly easily customize some parts of the UI in `config.ini`; changing the mascot ( goodbye, pixelcat :< ), the fonts, etc.
 
 For example:
 
-| Happening           | Cat                                                       |
-|---------------------|-----------------------------------------------------------|
-| Price goes up       | ![happy cat](./resources/pixelcat/pixelcat_cool.png)      |
-| Price goes down     | ![worried cat](./resources/pixelcat/pixelcat_worried.png) |
+| Happening                   | Cat                                                         |
+| --------------------------- | ----------------------------------------------------------- |
+| Price goes up               | ![happy cat](./resources/pixelcat/pixelcat_cool.png)        |
+| Price goes down             | ![worried cat](./resources/pixelcat/pixelcat_worried.png)   |
 | Market closed / no movement | ![sleeping cat](./resources/pixelcat/pixelcat_sleeping.png) |
 
-In crypto-land, however, *the market never closes*, so you'll probably never see sleeping cat. No rest for the proletariat!
+In crypto-land, however, _the market never closes_, so you'll probably never see sleeping cat. No rest for the proletariat!
 
 These are controlled via these values in `config.ini`:
 
@@ -150,16 +163,14 @@ For example, a simple swap out of stocks for COVID-19 vaccination data (see [res
 
 ![UI with Ireland COVID-19 Vaccination Rate](./resources/docs/vaccine.png)
 
-
-
 ## Credits
 
-* [Getting Started with Inky pHAT](https://learn.pimoroni.com/tutorial/sandyj/getting-started-with-inky-phat) is a good introduction to the basics.
-* The 04B pixel fonts included are sourced from http://www.04.jp.org/
-* [The Cozette font was developed by slavfox.](https://github.com/slavfox/Cozette)
-* [Matt Brubeck's in-depth guide on writing a layout engine in Rust](https://limpet.net/mbrubeck/2014/08/08/toy-layout-engine-1.html) was a great reference guide.
-* [José Fernando Costa's blog post on text sizing with PIL/Pillow](https://levelup.gitconnected.com/how-to-properly-calculate-text-size-in-pil-images-17a2cc6f51fd) was helpful with some head scratchers.
-* Inspiration from [Pwnagotchi](https://github.com/evilsocket/pwnagotchi) and [inky-cryptochart](https://github.com/DurandA/inky-cryptochart).
+- [Getting Started with Inky pHAT](https://learn.pimoroni.com/tutorial/sandyj/getting-started-with-inky-phat) is a good introduction to the basics.
+- The 04B pixel fonts included are sourced from http://www.04.jp.org/
+- [The Cozette font was developed by slavfox.](https://github.com/slavfox/Cozette)
+- [Matt Brubeck's in-depth guide on writing a layout engine in Rust](https://limpet.net/mbrubeck/2014/08/08/toy-layout-engine-1.html) was a great reference guide.
+- [José Fernando Costa's blog post on text sizing with PIL/Pillow](https://levelup.gitconnected.com/how-to-properly-calculate-text-size-in-pil-images-17a2cc6f51fd) was helpful with some head scratchers.
+- Inspiration from [Pwnagotchi](https://github.com/evilsocket/pwnagotchi) and [inky-cryptochart](https://github.com/DurandA/inky-cryptochart).
 
 ## Developing
 
@@ -247,12 +258,12 @@ As "hello worlds" go it's quite verbose, but it works fine when putting lots of 
 
 A stock provider must provide both a current price quote, and historical prices.
 
-If adding a third-party client, it should not pull in pandas or other large dependencies. I'd much prefer an implementation that just uses *requests* to interact with the relevant API endpoints.
+If adding a third-party client, it should not pull in pandas or other large dependencies. I'd much prefer an implementation that just uses _requests_ to interact with the relevant API endpoints.
 
 Providers tried/rejected:
 
-* **Alpha Vantage**: only supports historical data
-* **Coindesk**: only supports Bitcoin
+- **Alpha Vantage**: only supports historical data
+- **Coindesk**: only supports Bitcoin
 
 ## Disclaimer
 
