@@ -134,8 +134,18 @@ class Chart(Element):
             draw.text((left - self.TICK_LEN - self.GAP - tw, ty - label_h / 2),
                       text, fill=Color.BLACK, font=self._font)
 
-        # X labels, one per point, centred and clamped to the canvas
-        for index, text in enumerate(labels):
+        # X labels: show as many as fit without overlapping, evenly spaced and
+        # always including the first and last point. A long window (e.g. 30 days)
+        # has far too many points to label every one.
+        widest = max(draw.textlength(t, font=self._font) for t in labels)
+        max_labels = max(2, int((plot_w + 2 * self.GAP) / (widest + 2 * self.GAP)))
+        if len(labels) <= max_labels:
+            label_indices = list(range(len(labels)))
+        else:
+            stride = (len(labels) - 1) / (max_labels - 1)
+            label_indices = sorted({round(i * stride) for i in range(max_labels)})
+        for index in label_indices:
+            text = labels[index]
             tw = draw.textlength(text, font=self._font)
             tx = min(max(0, to_x(index) - tw / 2), self._width - tw)
             draw.text((tx, baseline + self.GAP), text, fill=Color.BLACK, font=self._font)

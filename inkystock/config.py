@@ -34,6 +34,7 @@ class MainConfig(BaseModel):
     rotate_display: int = 0
     loglevel: str = "INFO"
     color: str = 'auto'
+    chart_days: int = 30
 
     @validator('display_width_pixels', pre=True, always=True)
     def auto_display_width(cls, v):
@@ -70,6 +71,12 @@ class MainConfig(BaseModel):
         if len(v) and len(values.get('stock', "")):
             raise ConfigurationException("One of *either* stock or crypto must be specified")
         return v
+
+    @validator('chart_days')
+    def chart_days_minimum(cls, v):
+        if int(v) < 2:
+            raise ConfigurationException("chart_days must be at least 2")
+        return int(v)
 
     @validator('loglevel')
     def valid_loglevel(cls, v):

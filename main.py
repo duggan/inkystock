@@ -106,6 +106,7 @@ def update(config: Config, db: Database, stocks, painter: Pillow, log: logging.L
     # x-axis date labels are never clipped by the bottom edge of the panel.
     used_height = status_bar.height() + ticker_bar.height() + headline.height()
     chart = Chart(config, painter, historical,
+                  limit=config.main.chart_days,
                   height=config.main.display_height_pixels - used_height).build()
 
     # Assemble the layout from top to bottom.
