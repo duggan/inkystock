@@ -211,7 +211,7 @@ class Chart(UI):
         # Fill the height left over below the bars/headline when given one, so the
         # chart (and its x-axis labels) never overflow the panel; otherwise fall
         # back to half the display.
-        if self._height:
+        if self._height is not None:
             height = max(10, self._height - self.BOX_PADDING)
         else:
             height = int(self.config.main.display_height_pixels / 2)

@@ -3,7 +3,6 @@ import os
 from configparser import ConfigParser
 from typing import List, Optional, Union
 from pydantic import BaseModel, validator
-from inky.auto import auto
 
 
 @functools.lru_cache(maxsize=1)
@@ -14,7 +13,20 @@ def probe():
     (~0.3-1s on a Pi Zero). The three display validators below and
     paint.Pillow.display() all share this single memoized probe rather than
     re-detecting the hardware four times per run.
+
+    The import is deferred to here (rather than module top) so the rest of the
+    app runs without the optional `inky` package installed, as long as the
+    display dimensions/colour are set explicitly and screen != inky.
     """
+    try:
+        from inky.auto import auto
+    except ImportError as e:
+        raise ConfigurationException(
+            "Auto-detecting the display requires the 'inky' package. Install the Pi "
+            "extra (`uv sync --extra pi`, or `make install` on the Pi), or set "
+            "display_width_pixels, display_height_pixels and color explicitly in "
+            "config.ini (and screen to something other than 'inky')."
+        ) from e
     return auto()
 
 

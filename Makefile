@@ -18,7 +18,7 @@ install:
 # hardware probe are paid once, not on every update.
 service:
 	cp -f resources/inkystock.service /etc/systemd/system/inkystock.service
-	sed -i s/username/${SUDO_USER}/g /etc/systemd/system/inkystock.service
+	sed -i "s#__USER__#${SUDO_USER}#g; s#__INSTALL_DIR__#$$(getent passwd ${SUDO_USER} | cut -d: -f6)/inkystock#g" /etc/systemd/system/inkystock.service
 	systemctl daemon-reload
 	systemctl enable --now inkystock.service
 	@echo "InkyStock daemon installed and started. Follow logs: journalctl -u inkystock -f"
@@ -29,7 +29,7 @@ cron.5m:
 
 dev:
 	@if command -v uv >/dev/null 2>&1 ; then \
-		uv sync --extra pi --group dev ; \
+		uv sync --group dev ; \
 	else \
 		. .venv/bin/activate && python -m pip install --no-deps -r dev-requirements.txt ; \
 	fi

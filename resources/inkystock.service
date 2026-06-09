@@ -8,12 +8,12 @@ Type=notify
 # Accept the readiness/watchdog pings even if run.sh's fallback path forks Python
 # (e.g. via `uv run`) rather than exec'ing it as the main PID.
 NotifyAccess=all
-User=username
-WorkingDirectory=/home/username/inkystock
+User=__USER__
+WorkingDirectory=__INSTALL_DIR__
 # run.sh picks uv (or a .venv fallback) and execs the Python daemon, so the
 # notify socket and watchdog are handled by the app itself.
-ExecStart=/home/username/inkystock/run.sh --daemon
-EnvironmentFile=-/home/username/inkystock/.env
+ExecStart=__INSTALL_DIR__/run.sh --daemon
+EnvironmentFile=-__INSTALL_DIR__/.env
 Restart=on-failure
 RestartSec=10
 # The daemon pings the watchdog after each update and during its sleep, so a
