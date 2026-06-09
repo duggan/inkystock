@@ -32,6 +32,24 @@ You'll need to have SSH access to the Pi, and it will need access to the Interne
 
 Also, it's best to start with a freshly flashed OS; should help avoid any mysterious conflicts.
 
+#### Quick install (recommended)
+
+SSH to the Pi and run:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/duggan/inkystock/main/install.sh | sudo bash
+```
+
+This enables SPI/I2C, installs everything with [uv](https://docs.astral.sh/uv/), and starts InkyStock as a background `systemd` service. The default configuration needs **no API keys** — Bitcoin priced in EUR via Coinbase. Afterwards, edit `~/inkystock/config.ini` to change the currency, asset, or provider, then `sudo systemctl restart inkystock`.
+
+To install a specific branch or tag instead (handy for testing a PR), point the same one-liner at that ref and pass it through:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/duggan/inkystock/<ref>/install.sh | sudo bash -s -- --ref <ref>
+```
+
+#### Manual install
+
 Assuming you're using the default `pi` user on Raspbian (Buster), SSH to the pi:
 
 Enable SPI and I2C:
