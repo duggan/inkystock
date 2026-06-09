@@ -5,6 +5,9 @@ Wants=network-online.target
 
 [Service]
 Type=notify
+# Accept the readiness/watchdog pings even if run.sh's fallback path forks Python
+# (e.g. via `uv run`) rather than exec'ing it as the main PID.
+NotifyAccess=all
 User=username
 WorkingDirectory=/home/username/inkystock
 # run.sh picks uv (or a .venv fallback) and execs the Python daemon, so the

@@ -3,4 +3,4 @@ requests
 pillow>=10.0.0
 pycoingecko
 RPi.GPIO
-inky
+inky<2

@@ -114,42 +114,6 @@ wheels = [
 ]
 
 [[package]]
-name = "gpiod"
-version = "2.4.2"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/13/ca/b3bd043091b4462d6c5561f86581f553df102d8990c37938ddbff2823016/gpiod-2.4.2.tar.gz", hash = "sha256:602aae17ff365bb8e2a30ce65c6bbf2d8e7a7e64bf016e82e4fd4c730ef69ab7", size = 68330, upload-time = "2026-04-09T09:13:10.269Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/4a/f5/e8b7db7be2417b8e078203e7fb7b62f3615f1af82a88d32fc2b09cc0db48/gpiod-2.4.2-cp310-cp310-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:7fabcf8a3d7fd014d8499f9fd02e261c6ad69ff22359f860baa20d8c5008b74e", size = 112716, upload-time = "2026-04-09T09:12:34.798Z" },
-    { url = "https://files.pythonhosted.org/packages/f3/81/23ccd0c0aa1202d9fae3f2b7ab97a2cf48e40d6b35d8d523593e8c6f2109/gpiod-2.4.2-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:8e0c831ebd49eb103ff48354cc9b7443884dc2bc68e60a88eefa866700d1d55f", size = 112106, upload-time = "2026-04-09T09:12:35.987Z" },
-    { url = "https://files.pythonhosted.org/packages/f8/80/ed99a5cfe8f32b1046b50c574f795eb9b4ba6ec625c4044bed985c0909f3/gpiod-2.4.2-cp310-cp310-musllinux_1_2_aarch64.whl", hash = "sha256:5e07b927919ac03c41c14dfdb38ae8f2a75dda104c028b58a71138537d3ecfeb", size = 110779, upload-time = "2026-04-09T09:12:37.047Z" },
-    { url = "https://files.pythonhosted.org/packages/c1/8f/0ee50c56048cb4c77e257a85a0ef0f0ff9faf3ab6941a65769480726b0e8/gpiod-2.4.2-cp310-cp310-musllinux_1_2_x86_64.whl", hash = "sha256:d9f555185ad3ab10355a108213ec2436f0b37edab6c8dbc8ae9cbcc257beb4af", size = 110378, upload-time = "2026-04-09T09:12:38.133Z" },
-    { url = "https://files.pythonhosted.org/packages/33/43/aea5b73bf04aa6c9ce8e9774cfa3b10e1391b67610a13ba7a08f84b16f07/gpiod-2.4.2-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:f37be705406efa4d2170c03be2191f2be81bb5463c981d53e505084bc135132f", size = 114284, upload-time = "2026-04-09T09:12:39.281Z" },
-    { url = "https://files.pythonhosted.org/packages/20/a5/fcaf2a44449341a0169870434e55b1f3f49ca90883e206a3592ebc3a0891/gpiod-2.4.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:ec1526a258d251c93f0ad4589f47ff98b512f95f87ba283e33a107026c26ddcf", size = 113849, upload-time = "2026-04-09T09:12:40.614Z" },
-    { url = "https://files.pythonhosted.org/packages/91/28/2598ef0eccd98bd19c610cd72ab58df8b330aff6d8b76a0ee34bceafce21/gpiod-2.4.2-cp311-cp311-musllinux_1_2_aarch64.whl", hash = "sha256:81c28fd8fca36202d5269596d602406fdc8bf6940563560ba7c4f188c78b79d5", size = 112485, upload-time = "2026-04-09T09:12:42.038Z" },
-    { url = "https://files.pythonhosted.org/packages/fa/0c/dc857dd209fd1c9bc23f23cf7d01c904e6f4d6082e51ce0154663db827ba/gpiod-2.4.2-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:9d52c4a04e581ea7c8e1eebd27a38139d52b034ad8d80d5bbf94c5f80d70861d", size = 112193, upload-time = "2026-04-09T09:12:43.255Z" },
-    { url = "https://files.pythonhosted.org/packages/42/11/6d3c0a029ec8a9a7a59a061bd1c01ff68dc601f8827ca63766a1d76a202d/gpiod-2.4.2-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:452defdf75edf175a5f85d42a4186e3ad16b8d99aeac1843d1da939ec4643d0f", size = 114110, upload-time = "2026-04-09T09:12:45.314Z" },
-    { url = "https://files.pythonhosted.org/packages/15/b1/a0c205e35c9cc1f5fc0aad7bc896195aad0965d83c4b54252af2f82b2232/gpiod-2.4.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:64c5c53785d7d8c95471dc45cf9b5b701f967fc4b82f73ff0a909685e20fa677", size = 113886, upload-time = "2026-04-09T09:12:46.897Z" },
-    { url = "https://files.pythonhosted.org/packages/27/a1/e1e438abbd0cbbc44e220f064a8021453c1793e0ca7c400da8c320cf9fd7/gpiod-2.4.2-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:1ba4d8e2ebc83ac50d4546134f2222cf67d50534eda7433f03f496950991611f", size = 112635, upload-time = "2026-04-09T09:12:49.275Z" },
-    { url = "https://files.pythonhosted.org/packages/79/ad/bb712a2f673624ebd1da1782e6c4ea9311ef331c102e53fcbada1b58dcc5/gpiod-2.4.2-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:6b983c4b51b8d337def1c4c8440f2cc1ee0fdcbf15ce92f2fb0811bd5a7951f5", size = 112647, upload-time = "2026-04-09T09:12:51.237Z" },
-    { url = "https://files.pythonhosted.org/packages/1d/54/612fc53f5df6a7a7e27d97160eaf83d9facb5d8bd277f87cda3b292856a7/gpiod-2.4.2-cp39-cp39-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:54425eb9b04ddc5763e52cfaf1f81773d0a5e292c39f012b4f2aa633b446da89", size = 112016, upload-time = "2026-04-09T09:13:04.773Z" },
-    { url = "https://files.pythonhosted.org/packages/a9/9d/f16f19ac246cab0d5ccc348d9b132bbad9640dda55ba28f7f197ce300a7e/gpiod-2.4.2-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:d0c406b5643a32dea0f692274e7b37c7ebe2d17862a89c6eb60b941d4cb697d5", size = 111500, upload-time = "2026-04-09T09:13:06.51Z" },
-    { url = "https://files.pythonhosted.org/packages/4a/1a/eb360bc1b2b5ea4005e68b99a27ced9797a5478436563c2fd7fc39fd01c6/gpiod-2.4.2-cp39-cp39-musllinux_1_2_aarch64.whl", hash = "sha256:8b07eb7213884164d07e21248e40d1f681efb3174c161b162d2d717d719ae4fb", size = 110037, upload-time = "2026-04-09T09:13:07.768Z" },
-    { url = "https://files.pythonhosted.org/packages/2d/d1/8820e6e997f004e57a71af9be67703e512cf788e5b9d1872b82e82c9a580/gpiod-2.4.2-cp39-cp39-musllinux_1_2_x86_64.whl", hash = "sha256:45d19745760507664a8c509d8c82b9234e2dad315b567eadf49fdd447ebe0faf", size = 109773, upload-time = "2026-04-09T09:13:09.266Z" },
-]
-
-[[package]]
-name = "gpiodevice"
-version = "0.0.5"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "gpiod" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/bf/4f/c1b1266953cfcd0708e2a4376696e42b69bc5fe3559a66e2eb71501ac072/gpiodevice-0.0.5.tar.gz", hash = "sha256:cca01ff4319e0ba906ff46dcb8113d8d532b3f5ee03d683d8a11037c8e89140c", size = 10602, upload-time = "2024-04-29T09:33:28.181Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/d1/55/2ecb558c8f5a4700b2e7cc5a8d6077347543cd2c3e0c7de72b8a35d4afa4/gpiodevice-0.0.5-py3-none-any.whl", hash = "sha256:b808250cd1d89379b69f98cc6442b6b098aa32604c3ed7fb194a39607ee35253", size = 9227, upload-time = "2024-04-29T09:33:26.52Z" },
-]
-
-[[package]]
 name = "idna"
 version = "3.18"
 source = { registry = "https://pypi.org/simple" }
@@ -160,21 +124,18 @@ wheels = [
 
 [[package]]
 name = "inky"
-version = "2.4.0"
+version = "1.5.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "gpiodevice" },
     { name = "numpy", version = "2.0.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.10.*'" },
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
-    { name = "pillow", version = "11.3.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
-    { name = "pillow", version = "12.2.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "smbus2" },
     { name = "spidev" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/91/52/083b6e1b90396e2b8d07ad977e669a6fb18f6514edc8c2f873743abd78ca/inky-2.4.0.tar.gz", hash = "sha256:325822feaae9a6c9613e53e9cb3ed34b8a7f655561cdc0a43a9e37d149f30821", size = 16158715, upload-time = "2026-04-14T15:02:37.832Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/69/65/1ded0b0ac9c1c5c5ebd6c1e4e492ff37ccf8eea53a6ec44cd608516dbd08/inky-1.5.0.tar.gz", hash = "sha256:312d872985b0df038ebddb03653f5120d6902ceb9ce195a2043cf57feaf26c92", size = 24509, upload-time = "2023-02-07T13:28:28.865Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/27/e4/286711aaf7b9ab51a1874daae3d5ddd97df3f7dd60b8b8d4660fcb4aa4f0/inky-2.4.0-py3-none-any.whl", hash = "sha256:3471f6838b35825317ff63ff9687f758e37ca64a64888d1ca79d8457049058e0", size = 64041, upload-time = "2026-04-14T15:02:34.972Z" },
+    { url = "https://files.pythonhosted.org/packages/9b/f2/8f1e4304d566b7e78f3dbff195ae0855d1a991a28b7a66f63028bb31ef6d/inky-1.5.0-py3-none-any.whl", hash = "sha256:5d74c35ee4467186e4ade7ca9eb98ecd5b8c81feea8e7df9a14a8d682e988f49", size = 32725, upload-time = "2023-02-07T13:28:26.781Z" },
 ]
 
 [[package]]
@@ -205,7 +166,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "inky", marker = "extra == 'pi'" },
+    { name = "inky", marker = "extra == 'pi'", specifier = "<2" },
     { name = "pillow", specifier = ">=10.0.0" },
     { name = "pycoingecko" },
     { name = "pydantic", specifier = "~=1.10.14" },

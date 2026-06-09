@@ -18,7 +18,9 @@ dependencies = [
 # Pi, and omit them for local development.
 pi = [
     "RPi.GPIO",
-    "inky",
+    # inky 2.x grabs the SPI chip-select via gpiod and conflicts with the kernel
+    # spidev CS (line 8 / SPI_CE0_N); 1.x uses the kernel-managed CS. Pin to 1.x.
+    "inky<2",
 ]
 
 [dependency-groups]
