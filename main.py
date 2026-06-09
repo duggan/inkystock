@@ -101,7 +101,12 @@ def update(config: Config, db: Database, stocks, painter: Pillow, log: logging.L
     change = most_recent - yesterday
 
     headline = Headline(config, painter, current.data, change).build()
-    chart = Chart(config, painter, historical).build()
+
+    # Size the chart to the height left over below the bars and headline, so its
+    # x-axis date labels are never clipped by the bottom edge of the panel.
+    used_height = status_bar.height() + ticker_bar.height() + headline.height()
+    chart = Chart(config, painter, historical,
+                  height=config.main.display_height_pixels - used_height).build()
 
     # Assemble the layout from top to bottom.
     root = Container(name="root")
