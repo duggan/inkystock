@@ -28,8 +28,8 @@ class MainConfig(BaseModel):
     stock: str = ""
     crypto: str = "BTC"
     provider: str = "Coinbase"
-    display_width_pixels: Union[int,str] = 'auto'
-    display_height_pixels: Union[int,str] = 'auto'
+    display_width_pixels: Union[int, str] = 'auto'
+    display_height_pixels: Union[int, str] = 'auto'
     display_diagonal_inches: float = 2.13
     rotate_display: int = 0
     loglevel: str = "INFO"

@@ -42,12 +42,12 @@ class Palette:
     Helper class for creating palettes to inject into image objects
     """
     def black_and_white():
-        palette = PILImage.new('P', (1,1))
+        palette = PILImage.new('P', (1, 1))
         palette.putpalette(PaletteData.BLACK_AND_WHITE)
         return palette
 
     def color():
-        palette = PILImage.new('P', (1,1))
+        palette = PILImage.new('P', (1, 1))
         palette.putpalette(PaletteData.COLOR)
         return palette
 

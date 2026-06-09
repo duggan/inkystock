@@ -1,0 +1,21 @@
+[Unit]
+Description=InkyStock e-ink ticker
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=notify
+User=username
+WorkingDirectory=/home/username/inkystock
+# run.sh picks uv (or a .venv fallback) and execs the Python daemon, so the
+# notify socket and watchdog are handled by the app itself.
+ExecStart=/home/username/inkystock/run.sh --daemon
+EnvironmentFile=-/home/username/inkystock/.env
+Restart=on-failure
+RestartSec=10
+# The daemon pings the watchdog after each update and during its sleep, so a
+# genuinely wedged update (despite the per-request timeouts) gets restarted.
+WatchdogSec=120
+
+[Install]
+WantedBy=multi-user.target
