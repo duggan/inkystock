@@ -79,13 +79,37 @@ fi
 
 log "Installing into $TARGET_DIR"
 mkdir -p "$TARGET_DIR"
-# Preserve user-edited files across re-installs by carrying them into the new tree.
+
+# Existing install? Stop the old updater(s) first so two of them don't fight over
+# the SPI bus and panel.
+if command -v systemctl >/dev/null 2>&1; then
+  systemctl stop inkystock.service >/dev/null 2>&1 || true
+fi
+if [ -f /etc/cron.d/cron-inkystock ]; then
+  log "Removing the old 5-minute cron job (the service replaces it)"
+  rm -f /etc/cron.d/cron-inkystock
+fi
+
+# Carry the user's config forward — the fresh tree ships a default config.ini that
+# would otherwise overwrite it. (.env, data/ and any .git checkout are left in
+# place by the merge copy below.)
 for keep in config.ini .env; do
   if [ -f "$TARGET_DIR/$keep" ]; then
     cp -a "$TARGET_DIR/$keep" "$SRC/$keep"
-    log "  kept your existing $keep"
+    log "  keeping your existing $keep"
   fi
 done
+if grep -qsE '^[[:space:]]*provider[[:space:]]*=[[:space:]]*IEX' "$SRC/config.ini"; then
+  log "  NOTE: your config uses the IEX provider, which has been removed (IEX Cloud shut down)."
+  log "        Edit config.ini to 'provider = Yahoo' (stocks) or 'provider = Coinbase' (crypto)."
+fi
+
+# Rebuild the virtualenv from scratch so dependencies are clean (e.g. switching an
+# old pip .venv to uv). Price history in data/ is left untouched.
+rm -rf "$TARGET_DIR/.venv"
+
+# Copy the new code over the install. Same-named files are updated; existing
+# data/ (price history), .env and a .git checkout are preserved.
 cp -a "$SRC/." "$TARGET_DIR/"
 chown -R "$TARGET_USER":"$TARGET_USER" "$TARGET_DIR"
 
@@ -93,7 +117,8 @@ log "Installing uv (if needed) and Python dependencies"
 sudo -u "$TARGET_USER" env HOME="$TARGET_HOME" PATH="$TARGET_HOME/.local/bin:/usr/local/bin:/usr/bin:/bin" \
   bash -c '
     set -euo pipefail
-    command -v uv >/dev/null 2>&1 || curl -LsSf https://astral.sh/uv/install.sh | sh
+    # uv has no armv6 binary; if its installer fails, make install falls back to pip.
+    command -v uv >/dev/null 2>&1 || curl -LsSf https://astral.sh/uv/install.sh | sh || true
     cd "$HOME/inkystock"
     make install
   '
