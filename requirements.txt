@@ -2,7 +2,6 @@ pydantic~=1.10.14
 requests
 SQLAlchemy~=1.4.51
 pillow>=10.0.0
-matplotlib
 pycoingecko
 RPi.GPIO
 forex-python

@@ -1,106 +1,148 @@
-import io
-from math import sqrt
+from math import floor, log10
 
-import matplotlib.pyplot as plt
-from PIL import Image
-from matplotlib import font_manager, ticker
+from PIL import Image, ImageDraw, ImageFont
 
 from inkystock.config import Config
 from inkystock.layout import Element
 from inkystock.stocks.base import Series
-from inkystock.paint import Palette
+from inkystock.paint import PaletteData, Color
+
+
+def _nice_ticks(lo: float, hi: float, target: int = 2):
+    """Pick ~`target` round tick values spanning [lo, hi].
+
+    A tiny stand-in for matplotlib's MaxNLocator so the y-axis lands on
+    human-friendly numbers (e.g. 0, 10000) rather than the raw data range.
+    """
+    if hi <= lo:
+        return [lo]
+    raw_step = (hi - lo) / target
+    magnitude = 10 ** floor(log10(raw_step))
+    for mult in (1, 2, 2.5, 5, 10):
+        step = mult * magnitude
+        if raw_step <= step:
+            break
+    ticks = []
+    v = floor(lo / step) * step
+    while v <= hi + step * 0.001:
+        if v >= lo - step * 0.001:
+            ticks.append(v)
+        v += step
+    return ticks or [lo, hi]
 
 
 class Chart(Element):
+    """Render a price sparkline directly with Pillow.
+
+    Previously this used matplotlib, whose import alone costs several seconds on
+    a Raspberry Pi Zero, to draw a chart on a 212x104 panel. Drawing it directly
+    with Pillow (already a dependency) removes that cost entirely.
+    """
 
     TIMESTAMP_FORMAT = "%-d/%-m"
 
+    TICK_LEN = 2
+    GAP = 2
+    MARGIN = 0.06  # fraction of plot height kept clear above/below the line
+
     def __init__(self, config: Config, width: int, height: int):
-        # Create Matplotlib pixel chart
         self.config = config
+        self._width = width
+        self._height = height
+        self._series = None
         self._cache = None
 
-        # Trying to approximate appropriate pixel values for feeding to figsize.
-        # I haven't gone spelunking through pyplot, so it's just firing numbers into a magic box.
-        px = 1.2 / self.dpi()
-
-        # Dock some pixels for the labels (approx, will be affected by font size)
-        if self.config.main.display_width_pixels > 212:
-            w_offset = 20
+        # Match the panel palette so the rendered chart pastes straight onto the
+        # canvas with no per-element quantization. On colour panels the trend
+        # line uses the accent ink (index 2); otherwise it's black.
+        if self.config.main.color in ('red', 'yellow'):
+            self._palette = PaletteData.COLOR
+            self._line = 2
         else:
-            w_offset = 10
-        if self.config.main.display_height_pixels > 104:
-            h_offset = 5
-        else:
-            h_offset = 10
-        w = width - w_offset
-        h = height - h_offset
-        self.fig, self.ax = plt.subplots(figsize=(w*px, h*px))
+            self._palette = PaletteData.BLACK_AND_WHITE
+            self._line = Color.BLACK
 
-        # Configure font
-        ticks_font = font_manager.FontProperties(fname=self.config.fonts.chart, size=self.config.fonts.chart_size)
-        plt.rcParams['text.antialiased'] = False
-        for label in self.ax.get_yticklabels():
-            label.set_fontproperties(ticks_font)
-        for label in self.ax.get_xticklabels():
-            label.set_fontproperties(ticks_font)
-
-        # Set padding on axes to a low value
-        self.ax.yaxis.set_tick_params(pad=1, width=1)
-        self.ax.xaxis.set_tick_params(pad=1, width=1)
-
-        # Remove the right and top borders - "spines" - from the graph
-        self.ax.spines['right'].set_visible(False)
-        self.ax.spines['top'].set_visible(False)
+        self._font = ImageFont.truetype(self.config.fonts.chart,
+                                        max(5, int(round(self.config.fonts.chart_size))))
 
     def __repr__(self):
-        return f"(Chart size={self.size()}, dpi={self.dpi()})"
-
-    def dpi(self) -> float:
-        """
-        Calculate the DPI based on the display width/height and diagonal inches
-        :return:
-        """
-        diagonal_resolution_px = sqrt(pow(self.config.main.display_width_pixels, 2) +
-                                      pow(self.config.main.display_height_pixels, 2))
-        return diagonal_resolution_px / self.config.main.display_diagonal_inches
+        return f"(Chart size={self.size()})"
 
     def size(self):
-        return self.render().size
+        return self._width, self._height
 
     def plot(self, s: Series):
+        self._series = s
         self._cache = None
-        x = []
-        y = []
-        if max(p.data for p in s.series) > 999:
-            # Use 'K' to denominate thousands to stop the labels getting too large
-            self.ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda v, _: f"{int(v / 1000)}K"))
-        elif max(p.data for p in s.series) < 1:
-            # Two decimal places and strip leading zeros when price is less than 1
-            self.ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda v, _: f"{v:.2f}".lstrip('0')))
 
-        for p in s.series:
-            x.append(p.timestamp.strftime(self.TIMESTAMP_FORMAT))
-            y.append(p.data)
-        self.ax.plot(x, y,
-                     linewidth=1,
-                     linestyle='solid',
-                     solid_joinstyle='miter',
-                     color=self.config.main.color)
+    def _format_y(self, value: float, ymax: float) -> str:
+        if ymax > 999:
+            # 'K' to denominate thousands so labels stay narrow
+            return f"{int(value / 1000)}K"
+        if ymax < 1:
+            # two decimals, leading zero stripped, when prices are sub-1
+            return f"{value:.2f}".lstrip('0')
+        return f"{value:g}"
 
     def render(self):
         if self._cache:
             return self._cache
 
-        if self.config.main.color in ['red', 'yellow']:
-            palette = Palette.color()
-            num_colors = 3
-        else:
-            palette = Palette.black_and_white()
-            num_colors = 2
+        image = Image.new('P', (self._width, self._height), Color.WHITE)
+        image.putpalette(self._palette)
+        draw = ImageDraw.Draw(image)
 
-        with io.BytesIO() as f:
-            self.fig.savefig(f, dpi=self.dpi(), pad_inches=0, bbox_inches='tight')
-            chart = Image.open(f).convert('RGB')
-            self._cache = chart.quantize(colors=num_colors, palette=palette, dither=Image.Dither.NONE)
-            return self._cache
+        points = self._series.series
+        values = [p.data for p in points]
+        labels = [p.timestamp.strftime(self.TIMESTAMP_FORMAT) for p in points]
+        ymin, ymax = min(values), max(values)
+        span = (ymax - ymin) or 1
+
+        # Pick ticks across the padded (visible) range, so a clean bound such as
+        # 0 just outside the data range still gets a label, as matplotlib did.
+        pad = self.MARGIN * span
+        ticks = _nice_ticks(ymin - pad, ymax + pad)
+        label_h = self._font.getbbox("0/0")[3]
+        y_label_w = max(int(draw.textlength(self._format_y(t, ymax), font=self._font)) for t in ticks)
+
+        left = y_label_w + self.GAP + self.TICK_LEN
+        right = self._width - 1
+        top = 1
+        baseline = self._height - label_h - self.GAP
+        plot_w = right - left
+        plot_h = baseline - top
+
+        # Axes ("spines"): left and bottom only, matching the previous look.
+        draw.line([(left, top), (left, baseline)], fill=Color.BLACK)
+        draw.line([(left, baseline), (right, baseline)], fill=Color.BLACK)
+
+        def to_y(value: float) -> int:
+            frac = self.MARGIN + (value - ymin) / span * (1 - 2 * self.MARGIN)
+            return int(baseline - frac * plot_h)
+
+        def to_x(index: int) -> int:
+            if len(values) == 1:
+                return left + plot_w // 2
+            return int(left + index / (len(values) - 1) * plot_w)
+
+        # Y ticks + labels
+        for tick in ticks:
+            ty = to_y(tick)
+            draw.line([(left - self.TICK_LEN, ty), (left, ty)], fill=Color.BLACK)
+            text = self._format_y(tick, ymax)
+            tw = draw.textlength(text, font=self._font)
+            draw.text((left - self.TICK_LEN - self.GAP - tw, ty - label_h / 2),
+                      text, fill=Color.BLACK, font=self._font)
+
+        # X labels, one per point, centred and clamped to the canvas
+        for index, text in enumerate(labels):
+            tw = draw.textlength(text, font=self._font)
+            tx = min(max(0, to_x(index) - tw / 2), self._width - tw)
+            draw.text((tx, baseline + self.GAP), text, fill=Color.BLACK, font=self._font)
+
+        # The price line itself
+        line = [(to_x(i), to_y(v)) for i, v in enumerate(values)]
+        draw.line(line, fill=self._line, width=1)
+
+        self._cache = image
+        return self._cache

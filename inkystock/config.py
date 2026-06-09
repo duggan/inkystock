@@ -1,8 +1,21 @@
+import functools
 import os
 from configparser import ConfigParser
 from typing import List, Optional, Union
 from pydantic import BaseModel, validator, HttpUrl
 from inky.auto import auto
+
+
+@functools.lru_cache(maxsize=1)
+def probe():
+    """Probe the attached Inky pHAT, once per process.
+
+    auto() imports the inky driver subtree and reads the HAT EEPROM over I2C
+    (~0.3-1s on a Pi Zero). The three display validators below and
+    paint.Pillow.display() all share this single memoized probe rather than
+    re-detecting the hardware four times per run.
+    """
+    return auto()
 
 
 class ConfigurationException(ValueError):
@@ -25,22 +38,19 @@ class MainConfig(BaseModel):
     @validator('display_width_pixels', pre=True, always=True)
     def auto_display_width(cls, v):
         if not v or v == 'auto':
-            display = auto()
-            return display.resolution[0]
+            return probe().resolution[0]
         return v
 
     @validator('display_height_pixels', pre=True, always=True)
     def auto_display_height(cls, v):
         if not v or v == 'auto':
-            display = auto()
-            return display.resolution[1]
+            return probe().resolution[1]
         return v
 
     @validator('color', pre=True, always=True)
     def auto_color(cls, v):
         if not v or v == 'auto':
-            display = auto()
-            return display.colour
+            return probe().colour
         return v
 
     @validator('currency')
@@ -81,7 +91,7 @@ class FontsConfig(BaseModel):
     headline: str = "./resources/fonts/04B_30__.TTF"
     headline_size: int = 30
     chart: str = "./resources/fonts/04B_03__.TTF"
-    chart_size: float = 5.2
+    chart_size: float = 8
 
 
 class MascotConfig(BaseModel):

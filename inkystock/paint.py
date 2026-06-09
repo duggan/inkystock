@@ -9,9 +9,9 @@ from typing import Sequence, Tuple
 
 # I want to use the Image name myself, renaming the others for consistency
 from PIL import ImageFont as PILFont, Image as PILImage, ImageDraw as PILDraw
-from inky.auto import auto
 
 from inkystock import Element
+from inkystock.config import probe
 from inkystock.layout import LayoutList, Container, Layout, Border
 
 log = logging.getLogger("inkystock")
@@ -256,7 +256,7 @@ class Pillow(Painter):
         return PillowImage(canvas)
 
     def display(self, image: PillowImage):
-        board = auto()
+        board = probe()
         board.set_image(image.render())
         board.show()
 
