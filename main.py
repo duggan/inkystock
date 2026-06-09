@@ -5,9 +5,10 @@ from inkystock.config import Config
 from inkystock.db import Database
 from inkystock.layout import Container, Layout
 from inkystock.paint import Pillow
+from inkystock.stocks.coinbase import Coinbase
 from inkystock.stocks.coingecko import CoinGecko
-from inkystock.stocks.iex import IEX
 from inkystock.stocks.mock import Mock
+from inkystock.stocks.yahoo import Yahoo
 
 from ui import StatusBar, TickerBar, Headline, Chart
 
@@ -25,8 +26,6 @@ def main():
     # Need to do this otherwise variable interpolation breaks on the Pi due to some funky stuff in LS_COLORS
     # There may be other weird stuff set, so safer just to use an allow-list.
     env_vars = [
-        'IEX_TOKEN',
-        'IEX_ENDPOINT',
         'INKYSTOCK_SCREEN',
         'INKYSTOCK_DATABASE',
     ]
@@ -43,8 +42,10 @@ def main():
 
     db = Database(config)
 
-    if config.main.provider == 'IEX':
-        stocks = IEX(config)
+    if config.main.provider == 'Coinbase':
+        stocks = Coinbase(config)
+    elif config.main.provider == 'Yahoo':
+        stocks = Yahoo(config)
     elif config.main.provider == 'CoinGecko':
         stocks = CoinGecko(config)
     elif config.main.provider == 'MOCK':

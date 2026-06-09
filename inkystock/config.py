@@ -2,7 +2,7 @@ import functools
 import os
 from configparser import ConfigParser
 from typing import List, Optional, Union
-from pydantic import BaseModel, validator, HttpUrl
+from pydantic import BaseModel, validator
 from inky.auto import auto
 
 
@@ -27,7 +27,7 @@ class MainConfig(BaseModel):
     database = "sqlite:////tmp/inkystock.db"
     stock: str = ""
     crypto: str = "BTC"
-    provider: str = "CoinGecko"
+    provider: str = "Coinbase"
     display_width_pixels: Union[int,str] = 'auto'
     display_height_pixels: Union[int,str] = 'auto'
     display_diagonal_inches: float = 2.13
@@ -100,18 +100,6 @@ class MascotConfig(BaseModel):
     static: str = "./resources/pixelcat/pixelcat_sleeping.png"
 
 
-class IEXConfig(BaseModel):
-    token: str
-    endpoint: HttpUrl = "https://cloud.iexapis.com/stable"
-
-    @validator('token', 'endpoint')
-    def strip_quotes(cls, v):
-        if v and "'" in v:
-            return v.strip("'")
-        if v and '"' in v:
-            return v.strip('"')
-        return v
-
 class CoinGecko(BaseModel):
     api_key: str
 
@@ -156,11 +144,6 @@ class Config:
             self.outputs = OutputConfig(**self.__config['Outputs'])
         self.fonts = FontsConfig(**self.__config['Fonts'])
         self.mascot = MascotConfig(**self.__config['Mascot'])
-
-        # IEXCloud provider configuration
-        self.iex = IEXConfig(token="")
-        if self.main.provider == 'IEX':
-            self.iex = IEXConfig(**self.__config['IEX'])
 
         # CoinGecko provider configuration
         self.coingecko = CoinGecko(api_key="")
