@@ -14,7 +14,9 @@ class Mock(Stock):
         dates = []
         for d in range(days):
             dates.append(datetime.today() - timedelta(days=d))
-        self.dates = reversed(dates)
+        # A list, not a reversed() iterator: historical() may be called more than
+        # once (e.g. each tick of the daemon), which would exhaust an iterator.
+        self.dates = list(reversed(dates))
 
     @staticmethod
     def series(x, m):

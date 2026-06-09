@@ -1,8 +1,33 @@
+import functools
 import os
 from configparser import ConfigParser
 from typing import List, Optional, Union
-from pydantic import BaseModel, validator, HttpUrl
-from inky.auto import auto
+from pydantic import BaseModel, validator
+
+
+@functools.lru_cache(maxsize=1)
+def probe():
+    """Probe the attached Inky pHAT, once per process.
+
+    auto() imports the inky driver subtree and reads the HAT EEPROM over I2C
+    (~0.3-1s on a Pi Zero). The three display validators below and
+    paint.Pillow.display() all share this single memoized probe rather than
+    re-detecting the hardware four times per run.
+
+    The import is deferred to here (rather than module top) so the rest of the
+    app runs without the optional `inky` package installed, as long as the
+    display dimensions/colour are set explicitly and screen != inky.
+    """
+    try:
+        from inky.auto import auto
+    except ImportError as e:
+        raise ConfigurationException(
+            "Auto-detecting the display requires the 'inky' package. Install the Pi "
+            "extra (`uv sync --extra pi`, or `make install` on the Pi), or set "
+            "display_width_pixels, display_height_pixels and color explicitly in "
+            "config.ini (and screen to something other than 'inky')."
+        ) from e
+    return auto()
 
 
 class ConfigurationException(ValueError):
@@ -14,33 +39,31 @@ class MainConfig(BaseModel):
     database = "sqlite:////tmp/inkystock.db"
     stock: str = ""
     crypto: str = "BTC"
-    provider: str = "CoinGecko"
-    display_width_pixels: Union[int,str] = 'auto'
-    display_height_pixels: Union[int,str] = 'auto'
+    provider: str = "Coinbase"
+    display_width_pixels: Union[int, str] = 'auto'
+    display_height_pixels: Union[int, str] = 'auto'
     display_diagonal_inches: float = 2.13
     rotate_display: int = 0
     loglevel: str = "INFO"
     color: str = 'auto'
+    chart_days: int = 30
 
     @validator('display_width_pixels', pre=True, always=True)
     def auto_display_width(cls, v):
         if not v or v == 'auto':
-            display = auto()
-            return display.resolution[0]
+            return probe().resolution[0]
         return v
 
     @validator('display_height_pixels', pre=True, always=True)
     def auto_display_height(cls, v):
         if not v or v == 'auto':
-            display = auto()
-            return display.resolution[1]
+            return probe().resolution[1]
         return v
 
     @validator('color', pre=True, always=True)
     def auto_color(cls, v):
         if not v or v == 'auto':
-            display = auto()
-            return display.colour
+            return probe().colour
         return v
 
     @validator('currency')
@@ -60,6 +83,12 @@ class MainConfig(BaseModel):
         if len(v) and len(values.get('stock', "")):
             raise ConfigurationException("One of *either* stock or crypto must be specified")
         return v
+
+    @validator('chart_days')
+    def chart_days_minimum(cls, v):
+        if int(v) < 2:
+            raise ConfigurationException("chart_days must be at least 2")
+        return int(v)
 
     @validator('loglevel')
     def valid_loglevel(cls, v):
@@ -81,7 +110,7 @@ class FontsConfig(BaseModel):
     headline: str = "./resources/fonts/04B_30__.TTF"
     headline_size: int = 30
     chart: str = "./resources/fonts/04B_03__.TTF"
-    chart_size: float = 5.2
+    chart_size: float = 8
 
 
 class MascotConfig(BaseModel):
@@ -89,18 +118,6 @@ class MascotConfig(BaseModel):
     decreasing: str = "./resources/pixelcat/pixelcat_worried.png"
     static: str = "./resources/pixelcat/pixelcat_sleeping.png"
 
-
-class IEXConfig(BaseModel):
-    token: str
-    endpoint: HttpUrl = "https://cloud.iexapis.com/stable"
-
-    @validator('token', 'endpoint')
-    def strip_quotes(cls, v):
-        if v and "'" in v:
-            return v.strip("'")
-        if v and '"' in v:
-            return v.strip('"')
-        return v
 
 class CoinGecko(BaseModel):
     api_key: str
@@ -146,11 +163,6 @@ class Config:
             self.outputs = OutputConfig(**self.__config['Outputs'])
         self.fonts = FontsConfig(**self.__config['Fonts'])
         self.mascot = MascotConfig(**self.__config['Mascot'])
-
-        # IEXCloud provider configuration
-        self.iex = IEXConfig(token="")
-        if self.main.provider == 'IEX':
-            self.iex = IEXConfig(**self.__config['IEX'])
 
         # CoinGecko provider configuration
         self.coingecko = CoinGecko(api_key="")

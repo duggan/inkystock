@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Tuple
+from typing import Optional, Tuple
 
 from inkystock.chart import Chart as ChartBuilder
 from inkystock.config import Config
@@ -194,24 +194,37 @@ class Headline(UI):
 
 class Chart(UI):
 
-    def __init__(self, config: Config, painter: Painter, series: Series, limit: int = 7):
+    # Vertical padding the chart container adds around the chart (top + bottom).
+    BOX_PADDING = 2
+
+    def __init__(self, config: Config, painter: Painter, series: Series, limit: int = 7,
+                 height: Optional[int] = None):
         super().__init__(config, painter)
 
         if limit < 1:
             raise ValueError("limit must be a positive integer")
 
         self.series = Series(series=series.series[-limit:])
+        self._height = height
 
     def build(self) -> Container:
-        # Chart
+        # Fill the height left over below the bars/headline when given one, so the
+        # chart (and its x-axis labels) never overflow the panel; otherwise fall
+        # back to half the display.
+        if self._height is not None:
+            height = max(10, self._height - self.BOX_PADDING)
+        else:
+            height = int(self.config.main.display_height_pixels / 2)
+
         chart = ChartBuilder(self.config,
                              width=self.config.main.display_width_pixels,
-                             height=int(self.config.main.display_height_pixels / 2))
+                             height=height)
         chart.plot(self.series)
 
+        # No explicit height: the container expands to fit the chart plus padding
+        # rather than clipping its bottom (where the date labels are).
         chart_box = Container(chart.width(),
-                              chart.height(),
-                              padding=Padding(top=1, left=1, bottom=1),
+                              padding=Padding(top=1, bottom=1),
                               name="chart")
         chart_box.add(chart)
         return chart_box

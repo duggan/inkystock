@@ -1,11 +1,8 @@
 import hashlib
 import json
 import logging
+import sqlite3
 from datetime import date
-
-from sqlalchemy import Table, Column, Numeric, String, DateTime, MetaData
-from sqlalchemy import create_engine, exc
-from sqlalchemy.sql import select
 
 from inkystock.config import Config
 from inkystock.stocks.base import Point, Series
@@ -13,24 +10,36 @@ from inkystock.stocks.base import Point, Series
 log = logging.getLogger("inkystock")
 
 
+def sqlite_path(database: str) -> str:
+    """Turn a SQLAlchemy-style sqlite URL into a path for stdlib sqlite3.
+
+    Kept for backward compatibility with existing config.ini files:
+      sqlite:///relative/file.db  -> relative/file.db   (3 slashes = relative)
+      sqlite:////absolute/file.db -> /absolute/file.db  (4 slashes = absolute)
+      sqlite://  /  sqlite:///:memory: -> :memory:
+    A plain path (no scheme) is returned untouched.
+    """
+    if not database.startswith("sqlite:"):
+        return database
+    remainder = database[len("sqlite://"):]
+    # Strip exactly one leading slash: the relative form keeps none, the
+    # absolute form keeps its leading slash.
+    if remainder.startswith("/"):
+        remainder = remainder[1:]
+    return remainder or ":memory:"
+
+
 class Database:
 
     def __init__(self, config: Config):
         self.config = config
-        self.engine = create_engine(self.config.main.database)
-
-        metadata = MetaData()
-        self.prices = Table('prices', metadata,
-                            Column('datetime', DateTime),
-                            Column('provider', String),
-                            Column('currency', String),
-                            Column('asset', String),
-                            Column('price', Numeric))
-        self.cache = Table('cache', metadata,
-                           Column('key', String, primary_key=True),
-                           Column('value', String))
-        metadata.create_all(self.engine)
-        self.conn = self.engine.connect()
+        self.conn = sqlite3.connect(sqlite_path(self.config.main.database))
+        self.conn.execute(
+            "CREATE TABLE IF NOT EXISTS prices ("
+            "datetime TIMESTAMP, provider TEXT, currency TEXT, asset TEXT, price REAL)")
+        self.conn.execute(
+            "CREATE TABLE IF NOT EXISTS cache (key TEXT PRIMARY KEY, value TEXT)")
+        self.conn.commit()
 
     def asset(self):
         if len(self.config.main.crypto):
@@ -47,43 +56,39 @@ class Database:
         return m.hexdigest()
 
     def store_current(self, current: Point) -> Point:
-
-        ins = self.prices.insert().values(datetime=current.timestamp,
-                                          currency=self.config.main.currency,
-                                          provider=self.config.main.provider,
-                                          asset=self.asset(),
-                                          price=current.data)
-        self.conn.execute(ins)
+        self.conn.execute(
+            "INSERT INTO prices (datetime, provider, currency, asset, price) "
+            "VALUES (?, ?, ?, ?, ?)",
+            (current.timestamp.isoformat(), self.config.main.provider,
+             self.config.main.currency, self.asset(), float(current.data)))
+        self.conn.commit()
         return current
 
     def store_historical(self, historical: Series) -> Series:
         try:
             log.debug(f"Caching historical data with key {self.cache_key()}")
-            ins = self.cache.insert().values(key=self.cache_key(), value=historical.json())
-            self.conn.execute(ins)
-        except exc.IntegrityError as e:
+            self.conn.execute("INSERT INTO cache (key, value) VALUES (?, ?)",
+                              (self.cache_key(), historical.json()))
+            self.conn.commit()
+        except sqlite3.IntegrityError as e:
             log.warning(e)
         return historical
 
     def retrieve_historical(self) -> Series:
         log.debug(f"Retrieving historical data with key {self.cache_key()}")
-        s = select([self.cache]) \
-            .where(self.cache.c.key == self.cache_key())
-        key, result = self.conn.execute(s).first()
+        row = self.conn.execute("SELECT value FROM cache WHERE key = ?",
+                                (self.cache_key(),)).fetchone()
+        if row is None:
+            raise KeyError(f"No cached historical data for key {self.cache_key()}")
+        result = row[0]
         log.debug(f"Historical data: {result}")
-
         return Series(series=json.loads(result)['series'])
 
     def recent(self) -> Series:
-        s = select([self.prices]) \
-            .where(self.prices.c.currency == self.config.main.currency) \
-            .where(self.prices.c.asset == self.asset()) \
-            .where(self.prices.c.provider == self.config.main.provider) \
-            .order_by(self.prices.c.datetime.desc()) \
-            .limit(10)
-        rs = self.conn.execute(s)
-        results = []
-        for r in rs:
-            p = Point(timestamp=r[0], data=r[4])
-            results.append(p)
-        return Series(series=results)
+        rows = self.conn.execute(
+            "SELECT * FROM prices "
+            "WHERE currency = ? AND asset = ? AND provider = ? "
+            "ORDER BY datetime DESC LIMIT 10",
+            (self.config.main.currency, self.asset(), self.config.main.provider)).fetchall()
+        # Column order matches the CREATE TABLE above: datetime is r[0], price is r[4].
+        return Series(series=[Point(timestamp=r[0], data=r[4]) for r in rows])

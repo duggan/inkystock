@@ -1,0 +1,35 @@
+[project]
+name = "inkystock"
+version = "0.1.0"
+description = "A tiny, hackable, Raspberry Pi Zero powered e-ink display for cryptocurrency, stocks and more."
+readme = "README.md"
+requires-python = ">=3.9,<3.13"
+license = { file = "LICENSE" }
+dependencies = [
+    "pydantic~=1.10.14",
+    "requests",
+    "pillow>=10.0.0",
+    "pycoingecko",
+]
+
+[project.optional-dependencies]
+# Hardware-only dependencies for the Raspberry Pi / Inky pHAT. They don't build
+# off-device, so they live in an extra: install with `uv sync --extra pi` on the
+# Pi, and omit them for local development.
+pi = [
+    "RPi.GPIO",
+    # inky 2.x grabs the SPI chip-select via gpiod and conflicts with the kernel
+    # spidev CS (line 8 / SPI_CE0_N); 1.x uses the kernel-managed CS. Pin to 1.x.
+    "inky<2",
+]
+
+[dependency-groups]
+dev = [
+    "pycodestyle",
+    "mypy",
+]
+
+[tool.uv]
+# Not an installable package — main.py / ui.py live at the repo root and the app
+# is run directly. This tells uv to manage the environment without building it.
+package = false

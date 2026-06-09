@@ -22,15 +22,33 @@ You can buy off the shelf Raspberry Pi Zero cases. The official one looks like i
 
 You might notice there are Inky pHAT displays with either color or black & white. InkyStock should display correctly on either, with the trend line in color on the color displays.
 
-Cryptocurrency data is sourced from [CoinGecko](https://www.coingecko.com/), who very helpfully provide a free API.
+Cryptocurrency data is sourced from [Coinbase](https://www.coinbase.com/)'s public API — no account or API key required. Prices are fetched directly in your chosen currency.
 
-To display regular stocks, you'll need an [IEX Cloud](https://iexcloud.io/) API key. The free tier credits are enough to update the screen every 5 minutes, 24 hours a day. No credit card required. I'll accept pull requests for other providers, as long as they meet [the criteria](#adding-a-stock-provider).
+To display regular stocks, data comes from [Yahoo Finance](https://finance.yahoo.com/)'s public chart endpoint — also no API key required. (This is an unofficial, best-effort endpoint, so it may rate-limit or change without notice.) I'll accept pull requests for other providers, as long as they meet [the criteria](#adding-a-stock-provider).
 
 ### Install
 
 You'll need to have SSH access to the Pi, and it will need access to the Internet. There are a variety of tutorials on doing that, [here's one](https://desertbot.io/blog/headless-pi-zero-w-wifi-setup-windows).
 
 Also, it's best to start with a freshly flashed OS; should help avoid any mysterious conflicts.
+
+#### Quick install (recommended)
+
+SSH to the Pi and run:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/duggan/inkystock/main/install.sh | sudo bash
+```
+
+This enables SPI/I2C, installs everything with [uv](https://docs.astral.sh/uv/), and starts InkyStock as a background `systemd` service. The default configuration needs **no API keys** — Bitcoin priced in EUR via Coinbase. Afterwards, edit `~/inkystock/config.ini` to change the currency, asset, or provider, then `sudo systemctl restart inkystock`.
+
+To install a specific branch or tag instead (handy for testing a PR), point the same one-liner at that ref and pass it through:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/duggan/inkystock/<ref>/install.sh | sudo bash -s -- --ref <ref>
+```
+
+#### Manual install
 
 Assuming you're using the default `pi` user on Raspbian (Buster), SSH to the pi:
 
@@ -51,11 +69,9 @@ sudo make deps
 make install
 ```
 
-Now you'll want to modify `config.ini` to suit, adding IEX Cloud API key information if you want to use it for stocks, or CoinGecko for crypto.
+The default configuration works out of the box with **no API keys** (Coinbase for crypto). You only need to edit `config.ini` to change the currency or asset, or to switch provider.
 
-**Note**: as of **February 2024**, a CoinGecko Demo API key is required, which you can get for free by using the ["Create Demo Account" on their pricing page](https://www.coingecko.com/en/api/pricing).
-
-You can perform a test run by executing `./run.sh`. If it's set up correctly, you should see your screen updated within 10 seconds or so. If not, the error messages will hopefully be helpful enough to point you in the right direction.
+You can perform a test run by executing `./run.sh`, which performs a single update. If it's set up correctly, you should see your screen updated within a few seconds. If not, the error messages will hopefully be helpful enough to point you in the right direction.
 
 If you see an error like the following:
 
@@ -63,7 +79,15 @@ If you see an error like the following:
 
 then it may be worth [trying the inky "one line installer" from the Pimoroni tutorial.](https://learn.pimoroni.com/tutorial/sandyj/getting-started-with-inky-phat)
 
-When you're happy it's working, you can install a cron job to update the screen every 5 minutes:
+When you're happy it's working, install it as a background service so it updates continuously:
+
+```bash
+sudo make service
+```
+
+This runs InkyStock as a `systemd` daemon, updating every 5 minutes. Because it stays running, it pays the Python startup and hardware-probe cost **once at boot** instead of on every update. Follow its logs with `journalctl -u inkystock -f`.
+
+Alternatively, you can update via cron (a fresh process every 5 minutes):
 
 ```bash
 sudo make cron.5m
@@ -82,7 +106,7 @@ The default configuration in `config.ini` will show the current price of one Bit
 currency = EUR
 crypto = BTC
 database = sqlite:///data/inkystock.db
-provider = CoinGecko
+provider = Coinbase
 
 # Other config
 ...
@@ -100,17 +124,13 @@ currency = EUR
 # crypto = BTC
 stock = AAPL
 database = sqlite:///data/inkystock.db
-# provider = CoinGecko
-provider = IEX
-
-[IEX]
-token = YOUR_IEX_TOKEN
+provider = Yahoo
 
 # Other config
 ...
 ```
 
-At present, the only supported stock provider is IEX Cloud. You can register for a free key/token [here](https://iexcloud.io/).
+Stock data comes from Yahoo Finance's public endpoint — no API key required. Note this is an unofficial endpoint, so it's best-effort and may rate-limit or change without notice. Prices are converted to your configured currency using [ECB reference rates](https://frankfurter.dev) (also keyless).
 
 ## UI
 
